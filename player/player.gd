@@ -19,6 +19,7 @@ var life: int = 3
 var jump_count: int = 0
 var is_on_ladder: bool = false
 var coyote_time: bool = false
+var is_on_wall: bool = false  # New variable to track wall contact
 
 func _ready() -> void:
 	# $Camera2D.make_current()
@@ -75,6 +76,7 @@ func _physics_process(delta: float) -> void:
 	if state == State.HURT:
 		return
 	
+	is_on_wall = false  # Reset wall contact status
 	for idx in range(get_slide_collision_count()):
 		var collision = get_slide_collision(idx)
 		if collision.get_collider().name == 'Danger':
@@ -93,6 +95,10 @@ func _physics_process(delta: float) -> void:
 		if angle > 20:
 			# Slide down if the angle is greater than 30 degrees
 			velocity.x += normal.x * gravity * delta * 2  # Increase the multiplier for faster sliding
+
+		# Check for wall contact
+		if abs(normal.x) > 0.9:
+			is_on_wall = true
 
 	if state == State.JUMP and is_on_floor():
 		change_state(State.IDLE)
@@ -137,12 +143,12 @@ func get_input(delta: float):
 			var collision = get_slide_collision(idx)
 			var normal = collision.get_normal()
 			var angle = rad_to_deg(acos(normal.dot(Vector2.UP)))
-			if angle > 20 and angle < 50:  # Allow climbing up slopes between 30 and 50 degrees
+			if angle > 30 and angle < 50:  # Allow climbing up slopes between 30 and 50 degrees
 				if right or left:
 					# Reduce gravity effect and adjust speed for climbing
-					velocity.y = -20  # Apply a small upward force to prevent stopping
+					velocity.y = -10  # Apply a small upward force to prevent stopping
 					var climb_speed_factor = 1 - ((angle - 30) / 40)  # Adjust the speed reduction calculation
-					velocity.x -= normal.x * gravity * delta * climb_speed_factor * 0.8  # Adjust the multiplier for climbing speed
+					velocity.x -= normal.x * gravity * delta * climb_speed_factor * 0.2  # Adjust the multiplier for climbing speed
 
 	if climb and state != State.CLIMB and is_on_ladder:
 		change_state(State.CLIMB)
@@ -161,19 +167,28 @@ func get_input(delta: float):
 	if !down and state == State.CROUCH:
 		change_state(State.IDLE)
 
-	if jump and (is_on_floor() or coyote_time):
-		change_state(State.JUMP)
-		velocity.y = jump_speed
-		coyote_time = false
-		$CoyoteTimer.stop()
-		jump_count += 1
-		
-	elif jump and (!is_on_floor() and !coyote_time and jump_count < max_jumps):
-		print("JUMP")
-		print("JUMP COUNT", jump_count)
-		change_state(State.JUMP)
-		velocity.y = jump_speed / 1.5
-		jump_count += 1
+	if jump:
+		if is_on_floor() or coyote_time:
+			$JumpSound.play()
+			change_state(State.JUMP)
+			velocity.y = jump_speed
+			coyote_time = false
+			$CoyoteTimer.stop()
+			jump_count += 1
+				
+		elif !is_on_floor() and !coyote_time and jump_count < max_jumps:
+			$HighJumpSound.play()
+			change_state(State.JUMP)
+			velocity.y = jump_speed / 1.5
+			jump_count += 1
+
+		elif is_on_wall:
+			# Wall jump logic
+			$JumpSound.play()
+			change_state(State.JUMP)
+			velocity.y = jump_speed
+			velocity.x = -target_velocity_x  # Jump in the opposite direction of the wall
+			jump_count += 1
 
 	# IDLE transitions to RUN when moving
 	if state in [State.IDLE, State.CROUCH] and velocity.x != 0:

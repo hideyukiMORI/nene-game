@@ -1,7 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://b67i3tfkkuedg"]
+[gd_scene load_steps=15 format=3 uid="uid://b67i3tfkkuedg"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_jkgy0"]
 [ext_resource type="Texture2D" uid="uid://46vgihg4jaw5" path="res://assets/sprites/nene_01.png" id="1_n6y18"]
+[ext_resource type="AudioStream" uid="uid://dqepxwd760reg" path="res://assets/audio/se/jump_01.wav" id="3_oxrnn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a3bix"]
 size = Vector2(11.5, 26)
@@ -157,6 +158,7 @@ libraries = {
 }
 
 [node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -48)
 zoom = Vector2(2.5, 2.5)
 
 [node name="Dust" type="GPUParticles2D" parent="."]
@@ -172,3 +174,12 @@ explosiveness = 0.7
 
 [node name="CoyoteTimer" type="Timer" parent="."]
 wait_time = 0.05
+
+[node name="JumpSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_oxrnn")
+volume_db = -10.0
+pitch_scale = 0.58
+
+[node name="HighJumpSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_oxrnn")
+volume_db = -10.0
