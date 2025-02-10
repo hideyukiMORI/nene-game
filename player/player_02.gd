@@ -87,13 +87,6 @@ func _physics_process(delta: float) -> void:
 			else:
 				hurt()
 
-		# Check the angle of the collision normal
-		var normal = collision.get_normal()
-		var angle = rad_to_deg(acos(normal.dot(Vector2.UP)))
-		if angle > 20:
-			# Slide down if the angle is greater than 30 degrees
-			velocity.x += normal.x * gravity * delta * 2  # Increase the multiplier for faster sliding
-
 	if state == State.JUMP and is_on_floor():
 		change_state(State.IDLE)
 		$Dust.emitting = true
@@ -130,19 +123,6 @@ func get_input(delta: float):
 
 	var current_acceleration = acceleration if is_on_floor() else air_acceleration
 	velocity.x = move_toward(velocity.x, target_velocity_x, current_acceleration * delta)
-
-	# Allow climbing up slopes
-	if is_on_floor():
-		for idx in range(get_slide_collision_count()):
-			var collision = get_slide_collision(idx)
-			var normal = collision.get_normal()
-			var angle = rad_to_deg(acos(normal.dot(Vector2.UP)))
-			if angle > 20 and angle < 50:  # Allow climbing up slopes between 30 and 50 degrees
-				if right or left:
-					# Reduce gravity effect and adjust speed for climbing
-					velocity.y = -20  # Apply a small upward force to prevent stopping
-					var climb_speed_factor = 1 - ((angle - 30) / 40)  # Adjust the speed reduction calculation
-					velocity.x -= normal.x * gravity * delta * climb_speed_factor * 0.8  # Adjust the multiplier for climbing speed
 
 	if climb and state != State.CLIMB and is_on_ladder:
 		change_state(State.CLIMB)
