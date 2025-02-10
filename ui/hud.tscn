@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://dygt0jtnlvuqw"]
+
+[ext_resource type="Script" path="res://ui/hud.gd" id="1_m6swn"]
+[ext_resource type="FontFile" uid="uid://cqr2he4n6hsux" path="res://assets/fonts/Kenney Thick.ttf" id="1_on6hs"]
+
+[node name="HUD" type="MarginContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 20
+script = ExtResource("1_m6swn")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ScoreLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/shadow_offset_x = 5
+theme_override_constants/shadow_offset_y = 5
+theme_override_constants/outline_size = 5
+theme_override_constants/shadow_outline_size = 5
+theme_override_fonts/font = ExtResource("1_on6hs")
+theme_override_font_sizes/font_size = 48
+text = "0
+"

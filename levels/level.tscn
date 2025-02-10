@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3 uid="uid://0qx3bbca0l5e"]
+
+[ext_resource type="Texture2D" uid="uid://bjd1nhteeks64" path="res://assets/environment/layers/back.png" id="1_jfnyt"]
+[ext_resource type="Texture2D" uid="uid://bk4t5dqxn5686" path="res://assets/environment/layers/middle.png" id="2_n5pc6"]
+[ext_resource type="TileSet" uid="uid://c2e6xntqwe7fc" path="res://assets/tile_set/beach.tres" id="3_4vabf"]
+[ext_resource type="PackedScene" uid="uid://b67i3tfkkuedg" path="res://player/player.tscn" id="3_hhvqy"]
+[ext_resource type="PackedScene" uid="uid://dygt0jtnlvuqw" path="res://ui/hud.tscn" id="4_ujjet"]
+
+[node name="Level" type="Node2D"]
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.2, 1)
+motion_mirroring = Vector2(576, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer"]
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("1_jfnyt")
+centered = false
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="ParallaxBackground"]
+position = Vector2(0, 164)
+motion_mirroring = Vector2(880, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer2"]
+texture_repeat = 3
+texture = ExtResource("2_n5pc6")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 880, 368)
+
+[node name="World" type="TileMapLayer" parent="."]
+position = Vector2(0, -2)
+tile_set = ExtResource("3_4vabf")
+
+[node name="Objects" type="TileMapLayer" parent="."]
+
+[node name="Pickups" type="TileMapLayer" parent="."]
+
+[node name="Danger" type="TileMapLayer" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("3_hhvqy")]
+
+[node name="PlayerSpawn" type="Marker2D" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" parent="CanvasLayer" instance=ExtResource("4_ujjet")]
+offset_bottom = 94.0
