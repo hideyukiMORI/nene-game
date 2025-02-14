@@ -9,6 +9,7 @@ var tile_coords = {}
 var Item = preload('res://items/item.tscn')
 
 func _ready():
+	$Camera2D.make_current()
 	score_changed.connect($CanvasLayer/HUD._on_score_changed)
 	$Player.dead.connect(self._on_player_dead)
 	score = 0
@@ -27,14 +28,24 @@ func set_camera_limits() -> void:
 	# $Player/Camera2D.limit_right = (map_size.end.x + 5) * cell_size.x
 	print('map_size::', map_size.position.y)
 	print('map_size-end::', map_size.end.y)
-	$Player/Camera2D.limit_left = (map_size.position.x - 5) * cell_size.x
-	$Player/Camera2D.limit_top = (map_size.position.y - 5) * cell_size.y
-	$Player/Camera2D.limit_right = (map_size.end.x + 5) * cell_size.x
-	$Player/Camera2D.limit_bottom = (map_size.end.y) * cell_size.y
+	$Camera2D.limit_left = (map_size.position.x - 5) * cell_size.x
+	$Camera2D.limit_top = (map_size.position.y - 5) * cell_size.y
+	$Camera2D.limit_right = (map_size.end.x + 5) * cell_size.x
+	$Camera2D.limit_bottom = (map_size.end.y) * cell_size.y
 
-func _process(delta: float) -> void:
-	pass
+func _process(_delta: float) -> void:
+	var player_position = $Player.global_position
+	var camera = $Camera2D
+	var camera_margin = Vector2(50, 50)  # カメラが追随を開始するマージン
+	var camera_position = camera.global_position
 
+	if abs(player_position.x - camera_position.x) > camera_margin.x:
+		camera_position.x = player_position.x - sign(player_position.x - camera_position.x) * camera_margin.x
+
+	if abs(player_position.y - camera_position.y) > camera_margin.y:
+		camera_position.y = player_position.y - sign(player_position.y - camera_position.y) * camera_margin.y
+
+	camera.global_position = camera_position
 
 func spawn_items() -> void:
 	for cell in $Items.get_used_cells():

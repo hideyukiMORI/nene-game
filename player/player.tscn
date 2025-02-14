@@ -178,10 +178,6 @@ libraries = {
 "": SubResource("AnimationLibrary_4l054")
 }
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(0, -46)
-zoom = Vector2(2.5, 2.5)
-
 [node name="Dust" type="GPUParticles2D" parent="."]
 position = Vector2(-2, 16)
 rotation = -1.5708

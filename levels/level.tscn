@@ -57,4 +57,7 @@ z_index = 1
 [node name="HUD" parent="CanvasLayer" instance=ExtResource("4_ujjet")]
 offset_bottom = 94.0
 
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2.5, 2.5)
+
 [connection signal="score_changed" from="." to="CanvasLayer/HUD" method="_on_score_changed"]
