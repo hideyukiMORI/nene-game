@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 @export var run_speed: int = 350
+@export var dash_speed: int = 700  # New export variable for dash speed
 @export var jump_speed: int = -500
 @export var gravity: int = 1000
 @export var climb_speed: int = 50
@@ -11,7 +12,7 @@ extends CharacterBody2D
 signal life_changed
 signal dead
 
-enum State {IDLE, RUN, JUMP, HURT, DEAD, CROUCH, CLIMB}
+enum State {IDLE, WALK, RUN, JUMP, HURT, DEAD, CROUCH, CLIMB}
 var state: State = State.IDLE
 var anim: String = ""
 var new_anim: String = ""
@@ -29,7 +30,7 @@ func _ready() -> void:
 	$CoyoteTimer.wait_time = 0.2  # Adjust this value as needed
 	$CoyoteTimer.connect("timeout", Callable(self, "_on_CoyoteTimer_timeout"))
 
-func start(pos) -> void:
+func reset(pos) -> void:
 	print("START", pos)
 	position = pos
 	show()
@@ -38,12 +39,18 @@ func start(pos) -> void:
 	change_state(State.IDLE)
 
 func change_state(new_state: State):
+	if state == State.RUN and new_state != State.RUN:
+		$DashSound.stop()  # Stop the dash sound when leaving RUN state
+
 	state = new_state
 	match state:
 		State.IDLE:
 			new_anim = "idle"
-		State.RUN:
+		State.WALK:
 			new_anim = "walk"
+		State.RUN:
+			new_anim = "run"
+			$DashSound.play()  # Play the dash sound when entering RUN state
 		State.CROUCH:
 			new_anim = 'crouch'
 		State.HURT:
@@ -125,6 +132,7 @@ func get_input(delta: float):
 	var jump = Input.is_action_just_pressed("jump")
 	var down = Input.is_action_pressed("crouch")
 	var climb = Input.is_action_pressed("climb")
+	var dash = Input.is_action_pressed("dash")  # Check for dash input
 
 	var target_velocity_x = 0
 	if right:
@@ -133,6 +141,9 @@ func get_input(delta: float):
 	if left:
 		target_velocity_x -= run_speed
 		$Sprite2D.flip_h = true
+
+	if dash:
+		target_velocity_x *= 2  # Double the speed for dashing
 
 	var current_acceleration = acceleration if is_on_floor() else air_acceleration
 	velocity.x = move_toward(velocity.x, target_velocity_x, current_acceleration * delta)
@@ -190,16 +201,24 @@ func get_input(delta: float):
 			velocity.x = -target_velocity_x  # Jump in the opposite direction of the wall
 			jump_count += 1
 
-	# IDLE transitions to RUN when moving
+	# IDLE transitions to WALK when moving
 	if state in [State.IDLE, State.CROUCH] and velocity.x != 0:
+		change_state(State.WALK)
+
+	# WALK transitions to RUN when exceeding walk speed
+	if state == State.WALK and abs(velocity.x) > run_speed:
 		change_state(State.RUN)
+
+	# RUN transitions to WALK when dash is released and moving
+	if state == State.RUN and !dash and (right or left):
+		change_state(State.WALK)
 
 	# RUN transitions to IDLE when standing still
 	if state == State.RUN and velocity.x == 0:
 		change_state(State.IDLE)
 
 	# transition to JUMP when falling off an edge
-	if state in [State.IDLE, State.RUN] and not is_on_floor():
+	if state in [State.IDLE, State.WALK, State.RUN] and not is_on_floor():
 		change_state(State.JUMP)
 
 	if Input.is_action_pressed("select"):
@@ -218,26 +237,3 @@ func _on_CoyoteTimer_timeout() -> void:
 
 
 
-
-# const SPEED = 300.0
-# const JUMP_VELOCITY = -400.0
-
-
-# func _physics_process(delta: float) -> void:
-# 	# Add the gravity.
-# 	if not is_on_floor():
-# 		velocity += get_gravity() * delta
-
-# 	# Handle jump.
-# 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-# 		velocity.y = JUMP_VELOCITY
-
-# 	# Get the input direction and handle the movement/deceleration.
-# 	# As good practice, you should replace UI actions with custom gameplay actions.
-# 	var direction := Input.get_axis("ui_left", "ui_right")
-# 	if direction:
-# 		velocity.x = direction * SPEED
-# 	else:
-# 		velocity.x = move_toward(velocity.x, 0, SPEED)
-
-# 	move_and_slide()
