@@ -1,11 +1,11 @@
 extends CharacterBody2D
 
-@export var speed: int
-@export var gravity: int
+@export var speed: int = 25
+@export var gravity: int = 900
 var facing: int = 1
 
 func _physics_process(delta: float) -> void:
-	$Sprite2D.flip_h = velocity.x > 0
+	$Sprite2D.flip_h = velocity.x < 0
 	velocity.y += gravity * delta
 	velocity.x = facing * speed
 	move_and_slide()

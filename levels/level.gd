@@ -10,6 +10,7 @@ var Item = preload('res://items/item.tscn')
 
 func _ready():
 	score_changed.connect($CanvasLayer/HUD._on_score_changed)
+	$Player.dead.connect(self._on_player_dead)
 	score = 0
 	$Items.hide()
 	$Player.reset($PlayerSpawn.position)
@@ -71,7 +72,7 @@ func set_score(value):
 # func _on_door_entered(body):
 # 	GameState.next_level()
 	
-func _on_player_died():
+func _on_player_dead():
 	GameState.restart()
 
 func _on_ladders_body_entered(body):

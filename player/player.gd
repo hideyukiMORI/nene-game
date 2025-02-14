@@ -208,13 +208,15 @@ func get_input(delta: float):
 	# WALK transitions to RUN when exceeding walk speed
 	if state == State.WALK and abs(velocity.x) > run_speed:
 		change_state(State.RUN)
+	if state == State.RUN and abs(velocity.x) <= run_speed:
+		change_state(State.WALK)
 
 	# RUN transitions to WALK when dash is released and moving
 	if state == State.RUN and !dash and (right or left):
 		change_state(State.WALK)
 
 	# RUN transitions to IDLE when standing still
-	if state == State.RUN and velocity.x == 0:
+	if state in [State.RUN, State.WALK] and velocity.x == 0:
 		change_state(State.IDLE)
 
 	# transition to JUMP when falling off an edge
