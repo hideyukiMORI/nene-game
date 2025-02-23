@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cehiyuo8o3qgf"]
+[gd_scene load_steps=14 format=3 uid="uid://cehiyuo8o3qgf"]
 
 [ext_resource type="Script" path="res://ui/title_screen.gd" id="1_mm35g"]
 [ext_resource type="Texture2D" uid="uid://bjd1nhteeks64" path="res://assets/environment/layers/back.png" id="2_kpddp"]
@@ -14,6 +14,44 @@ border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
 border_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_eyvfc"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4m32k"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y3j5d"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_60onm"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5i4df"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_aenvd"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -54,6 +92,7 @@ offset_top = -11.5
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/shadow_offset_x = 15
 theme_override_constants/shadow_offset_y = 15
 theme_override_constants/outline_size = 15
@@ -74,6 +113,7 @@ offset_top = 192.0
 offset_bottom = 233.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/line_spacing = 0
 theme_override_constants/shadow_offset_x = 15
 theme_override_constants/shadow_offset_y = 15
@@ -100,6 +140,24 @@ offset_bottom = -40.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_j1qnp")
+
+[node name="CloseIcon" type="Button" parent="SettingPanel"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -72.0
+offset_bottom = 72.0
+grow_horizontal = 0
+theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_eyvfc")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_4m32k")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_y3j5d")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_60onm")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_5i4df")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_aenvd")
+text = "X"
 
 [node name="Label" type="Label" parent="SettingPanel"]
 layout_mode = 1
@@ -138,12 +196,12 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="SettingPanel/ScrollContainer/SettingList/Sound"]
+custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_7hamx")
 theme_override_font_sizes/font_size = 32
-text = "SOUND : 
-"
+text = "SOUND"
 
 [node name="OffButton" type="CheckButton" parent="SettingPanel/ScrollContainer/SettingList/Sound"]
 layout_mode = 2
@@ -162,157 +220,86 @@ alignment = 1
 [node name="VSeparator" type="VSeparator" parent="SettingPanel/ScrollContainer/SettingList/Sound"]
 layout_mode = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="BGM" type="HBoxContainer" parent="SettingPanel/ScrollContainer/SettingList"]
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="SettingPanel/ScrollContainer/SettingList/HBoxContainer2"]
+[node name="Label" type="Label" parent="SettingPanel/ScrollContainer/SettingList/BGM"]
+custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_7hamx")
 theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
+text = "BGM"
 
-[node name="Label3" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="BGMValue" type="Label" parent="SettingPanel/ScrollContainer/SettingList/BGM"]
+custom_minimum_size = Vector2(112, 0)
+layout_mode = 2
+text = "000"
+
+[node name="VolumeSlider" type="HSlider" parent="SettingPanel/ScrollContainer/SettingList/BGM"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="VSeparator" type="VSeparator" parent="SettingPanel/ScrollContainer/SettingList/BGM"]
+layout_mode = 2
+
+[node name="SE" type="HBoxContainer" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SettingPanel/ScrollContainer/SettingList/SE"]
+custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_7hamx")
 theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
+text = "SE"
 
-[node name="Label4" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="SEValue" type="Label" parent="SettingPanel/ScrollContainer/SettingList/SE"]
+custom_minimum_size = Vector2(112, 0)
+layout_mode = 2
+text = "000"
+
+[node name="VolumeSlider" type="HSlider" parent="SettingPanel/ScrollContainer/SettingList/SE"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="VSeparator" type="VSeparator" parent="SettingPanel/ScrollContainer/SettingList/SE"]
+layout_mode = 2
+
+[node name="Fullscreen" type="HBoxContainer" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SettingPanel/ScrollContainer/SettingList/Fullscreen"]
+custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_7hamx")
 theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
+text = "FullScreen"
 
-[node name="Label5" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="OffButton" type="CheckButton" parent="SettingPanel/ScrollContainer/SettingList/Fullscreen"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
+size_flags_horizontal = 3
+keep_pressed_outside = true
+text = "OFF"
+alignment = 1
 
-[node name="Label6" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="OnButton" type="CheckButton" parent="SettingPanel/ScrollContainer/SettingList/Fullscreen"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
+size_flags_horizontal = 3
+keep_pressed_outside = true
+text = "ON"
+alignment = 1
 
-[node name="Label7" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="VSeparator" type="VSeparator" parent="SettingPanel/ScrollContainer/SettingList/Fullscreen"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
 
-[node name="Label8" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="HSeparator2" type="HSeparator" parent="SettingPanel/ScrollContainer/SettingList"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
 
-[node name="Label9" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="CloseButton" type="Button" parent="SettingPanel/ScrollContainer/SettingList"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label10" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label11" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label12" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label13" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label14" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label15" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label16" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label17" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label18" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label19" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
-
-[node name="Label20" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
-text = "TESTTEST
-"
+text = "CLOSE"
