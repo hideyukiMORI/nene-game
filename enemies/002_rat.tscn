@@ -1,11 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://o8va5w4ftpib"]
+[gd_scene load_steps=9 format=3 uid="uid://clc13yod0dqr2"]
 
-[ext_resource type="Script" path="res://enemies/enemy.gd" id="1_gd4wb"]
-[ext_resource type="Texture2D" uid="uid://boegx4w2whag1" path="res://assets/sprites/slime_01-Sheet.png" id="2_curuc"]
-[ext_resource type="AudioStream" uid="uid://d3chk5mdup5bw" path="res://assets/audio/se/puchi.mp3" id="3_hg2oi"]
+[ext_resource type="Script" path="res://enemies/002_rat.gd" id="1_vu2cr"]
+[ext_resource type="Texture2D" uid="uid://d0keh1osa75ai" path="res://assets/sprites/002-rat.png" id="2_bljeh"]
+[ext_resource type="AudioStream" uid="uid://d3chk5mdup5bw" path="res://assets/audio/se/puchi.mp3" id="3_vwop1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_urccb"]
-size = Vector2(20, 15)
+size = Vector2(20, 22)
 
 [sub_resource type="Animation" id="Animation_cur1e"]
 length = 0.001
@@ -32,10 +32,32 @@ tracks/1/keys = {
 "points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(0)
 }
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:position:x")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.2, 0, 0.2, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Sprite2D:position:y")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.2, 0, 0.2, 0),
+"times": PackedFloat32Array(0)
+}
 
 [sub_resource type="Animation" id="Animation_ac17f"]
 resource_name = "death"
-length = 0.8
+length = 0.4
 step = 0.2
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -44,10 +66,10 @@ tracks/0/path = NodePath("Sprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4),
-"transitions": PackedFloat32Array(1, 1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [2, 1, 0]
+"values": [2]
 }
 tracks/1/type = "bezier"
 tracks/1/imported = false
@@ -56,16 +78,38 @@ tracks/1/path = NodePath("Sprite2D:modulate:a")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"handle_modes": PackedInt32Array(0, 0, 0),
-"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 0.2, 0.8)
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.4)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:position:x")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, -0.2, 0, 0.2, 0, -35, -0.2, 0, 0.2, 0),
+"times": PackedFloat32Array(0, 0.4)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Sprite2D:position:y")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, -0.2, 0, 0.2, -57.5, 15, -0.2, 0, 0.2, 0),
+"times": PackedFloat32Array(0, 0.4)
 }
 
 [sub_resource type="Animation" id="Animation_g4fko"]
 resource_name = "walk"
-length = 0.8
+length = 0.4
 loop_mode = 1
-step = 0.2
+step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -73,10 +117,10 @@ tracks/0/path = NodePath("Sprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [6, 5, 4, 3]
+"values": [0, 1, 2, 3]
 }
 tracks/1/type = "bezier"
 tracks/1/imported = false
@@ -99,17 +143,18 @@ _data = {
 
 [node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
 collision_layer = 8
-collision_mask = 3
-script = ExtResource("1_gd4wb")
+collision_mask = 11
+script = ExtResource("1_vu2cr")
+speed = 71
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0)
-texture = ExtResource("2_curuc")
-hframes = 7
+texture = ExtResource("2_bljeh")
+hframes = 4
 frame = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 6.5)
+position = Vector2(0, 3)
 shape = SubResource("RectangleShape2D_urccb")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -119,6 +164,6 @@ libraries = {
 autoplay = "walk"
 
 [node name="HitSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("3_hg2oi")
+stream = ExtResource("3_vwop1")
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

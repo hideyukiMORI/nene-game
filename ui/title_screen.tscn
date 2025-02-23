@@ -1,10 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://cehiyuo8o3qgf"]
+[gd_scene load_steps=8 format=3 uid="uid://cehiyuo8o3qgf"]
 
 [ext_resource type="Script" path="res://ui/title_screen.gd" id="1_mm35g"]
 [ext_resource type="Texture2D" uid="uid://bjd1nhteeks64" path="res://assets/environment/layers/back.png" id="2_kpddp"]
 [ext_resource type="Texture2D" uid="uid://bk4t5dqxn5686" path="res://assets/environment/layers/middle.png" id="3_c7f66"]
 [ext_resource type="FontFile" uid="uid://cqr2he4n6hsux" path="res://assets/fonts/Kenney Thick.ttf" id="4_7hamx"]
 [ext_resource type="AudioStream" uid="uid://25d42la5ao0j" path="res://assets/audio/se/start.wav" id="5_22usp"]
+[ext_resource type="Theme" uid="uid://cf5p1g5ho3kg7" path="res://assets/theme/nene_theme.tres" id="6_7xhf2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j1qnp"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0, 0, 0, 1)
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -13,6 +22,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("6_7xhf2")
 script = ExtResource("1_mm35g")
 
 [node name="TextureRect" type="TextureRect" parent="."]
@@ -77,3 +87,232 @@ vertical_alignment = 1
 
 [node name="StartSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5_22usp")
+
+[node name="SettingPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_j1qnp")
+
+[node name="Label" type="Label" parent="SettingPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+offset_top = 24.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "SETTING"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="SettingPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 80.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+
+[node name="SettingList" type="VBoxContainer" parent="SettingPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HSeparator" type="HSeparator" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+
+[node name="Sound" type="HBoxContainer" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SettingPanel/ScrollContainer/SettingList/Sound"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "SOUND : 
+"
+
+[node name="OffButton" type="CheckButton" parent="SettingPanel/ScrollContainer/SettingList/Sound"]
+layout_mode = 2
+size_flags_horizontal = 3
+keep_pressed_outside = true
+text = "OFF"
+alignment = 1
+
+[node name="OnButton" type="CheckButton" parent="SettingPanel/ScrollContainer/SettingList/Sound"]
+layout_mode = 2
+size_flags_horizontal = 3
+keep_pressed_outside = true
+text = "ON"
+alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="SettingPanel/ScrollContainer/SettingList/Sound"]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="SettingPanel/ScrollContainer/SettingList/HBoxContainer2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label3" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label4" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label5" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label6" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label7" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label8" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label9" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label10" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label11" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label12" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label13" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label14" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label15" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label16" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label17" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label18" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label19" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"
+
+[node name="Label20" type="Label" parent="SettingPanel/ScrollContainer/SettingList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_7hamx")
+theme_override_font_sizes/font_size = 32
+text = "TESTTEST
+"

@@ -18,6 +18,19 @@ func _physics_process(delta: float) -> void:
 			facing = sign(collision.get_normal().x)
 			velocity.y = -100
 	
+	# Check if there is no floor ahead using intersect_ray
+	if is_on_floor():
+		var floor_check_start = position + Vector2(0, $CollisionShape2D.shape.extents.y)
+		var floor_check_end = floor_check_start + Vector2(facing * $CollisionShape2D.shape.extents.x * 2, 10)
+		var space_state = get_world_2d().direct_space_state
+		var ray_params = PhysicsRayQueryParameters2D.new()
+		ray_params.from = floor_check_start
+		ray_params.to = floor_check_end
+		ray_params.exclude = [self]
+		var result = space_state.intersect_ray(ray_params)
+		if not result.has("position"):
+			facing = -facing
+
 	if position.y > 1000:
 		queue_free()
 

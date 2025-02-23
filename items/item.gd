@@ -17,7 +17,7 @@ func initialize(type: String, pos: Vector2) -> void:
 	position = pos
 
 func _on_Collectible_body_entered(_body: Node) -> void:
-	print('pickup!!!')
+	# print('pickup!!!')
 	emit_signal('pickup')
 	$AnimationPlayer.play('pickup')
 	$PickupSound.play()
