@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://0qx3bbca0l5e"]
+[gd_scene load_steps=9 format=3 uid="uid://0qx3bbca0l5e"]
 
 [ext_resource type="Script" path="res://levels/level.gd" id="1_6gjeu"]
 [ext_resource type="Texture2D" uid="uid://bjd1nhteeks64" path="res://assets/environment/layers/back.png" id="1_jfnyt"]
@@ -7,8 +7,10 @@
 [ext_resource type="PackedScene" uid="uid://b67i3tfkkuedg" path="res://player/player.tscn" id="3_hhvqy"]
 [ext_resource type="PackedScene" uid="uid://dygt0jtnlvuqw" path="res://ui/hud.tscn" id="4_ujjet"]
 [ext_resource type="TileSet" uid="uid://bdb5164exifvc" path="res://assets/tile_set/items.tres" id="5_xerwc"]
+[ext_resource type="AudioStream" uid="uid://b71wxguwpe0rh" path="res://assets/audio/bgm/stage_01.wav" id="7_b8ghi"]
 
 [node name="Level" type="Node2D"]
+process_mode = 3
 script = ExtResource("1_6gjeu")
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
@@ -41,16 +43,25 @@ position = Vector2(0, -2)
 tile_set = ExtResource("3_4vabf")
 
 [node name="Objects" type="TileMapLayer" parent="."]
+process_mode = 1
 
 [node name="Items" type="TileMapLayer" parent="."]
 tile_set = ExtResource("5_xerwc")
 
 [node name="Danger" type="TileMapLayer" parent="."]
 
+[node name="Enemies" type="Node" parent="."]
+process_mode = 1
+
 [node name="Player" parent="." instance=ExtResource("3_hhvqy")]
+process_mode = 1
 z_index = 1
 
+[node name="Front" type="TileMapLayer" parent="."]
+process_mode = 1
+
 [node name="PlayerSpawn" type="Marker2D" parent="."]
+process_mode = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -59,5 +70,8 @@ offset_bottom = 94.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2.5, 2.5)
+
+[node name="BGM" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_b8ghi")
 
 [connection signal="score_changed" from="." to="CanvasLayer/HUD" method="_on_score_changed"]

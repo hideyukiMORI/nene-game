@@ -1,7 +1,6 @@
-[gd_scene load_steps=14 format=4 uid="uid://c17lfbhw5kvor"]
+[gd_scene load_steps=13 format=4 uid="uid://c17lfbhw5kvor"]
 
 [ext_resource type="PackedScene" uid="uid://0qx3bbca0l5e" path="res://levels/level.tscn" id="1_fwaa1"]
-[ext_resource type="AudioStream" uid="uid://b71wxguwpe0rh" path="res://assets/audio/bgm/stage_01.wav" id="2_w4w2a"]
 [ext_resource type="TileSet" uid="uid://bdb5164exifvc" path="res://assets/tile_set/items.tres" id="2_xh70m"]
 [ext_resource type="PackedScene" uid="uid://bl5npkm2fmphs" path="res://objects/moving_platform.tscn" id="3_shtq5"]
 [ext_resource type="PackedScene" uid="uid://o8va5w4ftpib" path="res://enemies/enemy.tscn" id="4_nn2op"]
@@ -39,137 +38,134 @@ initial_velocity = Vector2(50, 0)
 position = Vector2(0, 2)
 tile_map_data = PackedByteArray("AAAMABAAAQAAAAAAAAAOABAAAQAAAAAAAAAQABAAAQAAAAAAAAASABAAAQAAAAAAAAAUABAAAQAAAAAAAAAWABAAAQAAAAAAAAAYABAAAQAAAAAAAAAaABAAAQAAAAAAAAAcABAAAQAAAAAAAAAeABAAAQAAAAAAAAAgABAAAQAAAAAAAAAiABAAAQAAAAAAAAAJABEAAQAAAAAAAAAxABwAAQAAAAAAAAAzABwAAQAAAAAAAAA1ABwAAQAAAAAAAAA3ABwAAQAAAAAAAAA5ABwAAQAAAAAAAAA7ABwAAQAAAAAAAAA9ABwAAQAAAAAAAAA/ABwAAQAAAAAAAABBABwAAQAAAAAAAABDABwAAQAAAAAAAABCABYAAQAAAAAAAABCABQAAQAAAAAAAABCABIAAQAAAAAAAABCABAAAQAAAAAAAABCAA4AAQAAAAAAAABCAAwAAQAAAAAAAABCAAoAAQAAAAAAAABCAAgAAQAAAAAAAABCAAYAAQAAAAAAAABCAAQAAQAAAAAAAAA9AAUAAQAAAAAAAAA9AAcAAQAAAAAAAAA9AAkAAQAAAAAAAAA9AAsAAQAAAAAAAAA9AA0AAQAAAAAAAAA9AA8AAQAAAAAAAAA9ABEAAQAAAAAAAAA9ABMAAQAAAAAAAAA9ABUAAQAAAAAAAABGABEAAQAAAAAAAABIABEAAQAAAAAAAABKABEAAQAAAAAAAABMABEAAQAAAAAAAABOABEAAQAAAAAAAABQABEAAQAAAAAAAABSABEAAQAAAAAAAABUABEAAQAAAAAAAABWABEAAQAAAAAAAABYABEAAQAAAAAAAABaABEAAQAAAAAAAABcABEAAQAAAAAAAABeABEAAQAAAAAAAABgABEAAQAAAAAAAABiABEAAQAAAAAAAABkABEAAQAAAAAAAABmABEAAQAAAAAAAABoABEAAQAAAAAAAABqABEAAQAAAAAAAABsABEAAQAAAAAAAABuABEAAQAAAAAAAABwABEAAQAAAAAAAAByABEAAQAAAAAAAAB0ABEAAQAAAAAAAAB2ABEAAQAAAAAAAAB4ABEAAQAAAAAAAAB6ABEAAQAAAAAAAAB8ABEAAQAAAAAAAAB+ABEAAQAAAAAAAACAABEAAQAAAAAAAACCABEAAQAAAAAAAACEABEAAQAAAAAAAACGABEAAQAAAAAAAACIABEAAQAAAAAAAACKABEAAQAAAAAAAACMABEAAQAAAAAAAACOABEAAQAAAAAAAACQABEAAQAAAAAAAACSABEAAQAAAAAAAACUABEAAQAAAAAAAACWABEAAQAAAAAAAACYABEAAQAAAAAAAACaABEAAQAAAAAAAACcABEAAQAAAAAAAACeABEAAQAAAAAAAABiAAYAAQAAAAAAAABjAAYAAQAAAAAAAABkAAYAAQAAAAAAAABlAAYAAQAAAAAAAABmAAYAAQAAAAAAAABoAAYAAQAAAAAAAABnAAYAAQAAAAAAAABpAAYAAQAAAAAAAABqAAYAAQAAAAAAAAANABkAAQAAAAAAAAAOABkAAQAAAAAAAAAPABkAAQAAAAAAAAAQABkAAQAAAAAAAAARABkAAQAAAAAAAAASABkAAQAAAAAAAAAhABkAAQAAAAAAAAAiABkAAQAAAAAAAAAkABkAAQAAAAAAAAAjABkAAQAAAAAAAAAlABkAAQAAAAAAAAAmABkAAQAAAAAAAAAGABYAAQAAAAAAAAAHABYAAQAAAAAAAAAIABYAAQAAAAAAAAAJABYAAQAAAAAAAAADABkAAQAAAAAAAAACABkAAQAAAAAAAAABABkAAQAAAAAAAAAAABkAAQAAAAAAAAAHABoAAQAAAAAAAAAIABoAAQAAAAAAAAAJABoAAQAAAAAAAAAKABoAAQAAAAAAAAAlABEAAQAAAAAAAAAhAAsAAQAAAAAAAAAfAAsAAQAAAAAAAAAdAAsAAQAAAAAAAAAbAAsAAQAAAAAAAAAZAAsAAQAAAAAAAAAXAAsAAQAAAAAAAAAVAAsAAQAAAAAAAAATAAsAAQAAAAAAAAARAAsAAQAAAAAAAAAPAAsAAQAAAAAAAAANAAsAAQAAAAAAAAA=")
 
-[node name="Enemies" type="Node" parent="." index="5"]
-
 [node name="Enemy" parent="Enemies" index="0" instance=ExtResource("4_nn2op")]
-position = Vector2(3152, 688)
+position = Vector2(3152, 687)
 
 [node name="Enemy2" parent="Enemies" index="1" instance=ExtResource("4_nn2op")]
-position = Vector2(3204, 688)
+position = Vector2(3204, 687)
 
 [node name="Enemy3" parent="Enemies" index="2" instance=ExtResource("4_nn2op")]
-position = Vector2(3252, 688)
+position = Vector2(3252, 687)
 
 [node name="Enemy4" parent="Enemies" index="3" instance=ExtResource("4_nn2op")]
-position = Vector2(3296, 688)
+position = Vector2(3296, 687)
 
 [node name="Enemy5" parent="Enemies" index="4" instance=ExtResource("4_nn2op")]
-position = Vector2(368, 384)
+position = Vector2(368, 383)
 
 [node name="Enemy6" parent="Enemies" index="5" instance=ExtResource("4_nn2op")]
-position = Vector2(416, 384)
+position = Vector2(416, 383)
 
 [node name="Enemy7" parent="Enemies" index="6" instance=ExtResource("4_nn2op")]
-position = Vector2(460, 384)
+position = Vector2(460, 383)
 
 [node name="Enemy8" parent="Enemies" index="7" instance=ExtResource("5_6wd18")]
-position = Vector2(52, 192)
+position = Vector2(52, 191)
 
 [node name="Enemy9" parent="Enemies" index="8" instance=ExtResource("5_6wd18")]
-position = Vector2(72, 192)
+position = Vector2(72, 191)
 
 [node name="Enemy10" parent="Enemies" index="9" instance=ExtResource("5_6wd18")]
-position = Vector2(88, 192)
+position = Vector2(88, 191)
 
 [node name="Enemy11" parent="Enemies" index="10" instance=ExtResource("5_6wd18")]
-position = Vector2(108, 192)
+position = Vector2(108, 191)
 
 [node name="Enemy12" parent="Enemies" index="11" instance=ExtResource("6_17hwc")]
-position = Vector2(256, 68)
+position = Vector2(256, 67)
 
 [node name="Enemy13" parent="Enemies" index="12" instance=ExtResource("6_17hwc")]
-position = Vector2(312, 68)
+position = Vector2(312, 67)
 
 [node name="Fairy" parent="Enemies" index="13" instance=ExtResource("8_m417f")]
-position = Vector2(720, 128)
+position = Vector2(720, 127)
 collision_mask = 10
 
 [node name="Fairy2" parent="Enemies" index="14" instance=ExtResource("8_m417f")]
-position = Vector2(848, 248)
+position = Vector2(848, 247)
 collision_mask = 10
 
 [node name="Fairy3" parent="Enemies" index="15" instance=ExtResource("8_m417f")]
-position = Vector2(680, 260)
+position = Vector2(680, 259)
 collision_mask = 10
 
 [node name="Fairy4" parent="Enemies" index="16" instance=ExtResource("8_m417f")]
-position = Vector2(592, 256)
+position = Vector2(592, 255)
 collision_mask = 10
 
 [node name="Fairy5" parent="Enemies" index="17" instance=ExtResource("8_m417f")]
-position = Vector2(1024, 404)
+position = Vector2(1024, 403)
 collision_mask = 10
 
 [node name="Rat" parent="Enemies" index="18" instance=ExtResource("8_fupl8")]
-position = Vector2(288, -176)
+position = Vector2(288, -177)
 
 [node name="Rat2" parent="Enemies" index="19" instance=ExtResource("8_fupl8")]
-position = Vector2(240, -176)
+position = Vector2(240, -177)
 
 [node name="Rat3" parent="Enemies" index="20" instance=ExtResource("8_fupl8")]
-position = Vector2(196, -176)
+position = Vector2(196, -177)
 
 [node name="Ghost" parent="Enemies" index="21" instance=ExtResource("9_p0hpw")]
-position = Vector2(1372, 164)
+position = Vector2(1372, 163)
 movement_range = Vector2(100, 300)
 
 [node name="Ghost2" parent="Enemies" index="22" instance=ExtResource("9_p0hpw")]
-position = Vector2(1840, 92)
+position = Vector2(1840, 91)
 movement_range = Vector2(200, 100)
 
 [node name="Ghost3" parent="Enemies" index="23" instance=ExtResource("9_p0hpw")]
-position = Vector2(2212, 208)
+position = Vector2(2212, 207)
 movement_range = Vector2(200, 100)
 
 [node name="Cat" parent="Enemies" index="24" instance=ExtResource("10_skpba")]
-position = Vector2(928, 416)
+position = Vector2(928, 415)
 collision_mask = 11
 speed = 30
 
 [node name="Cat2" parent="Enemies" index="25" instance=ExtResource("10_skpba")]
-position = Vector2(852, 416)
+position = Vector2(852, 415)
 collision_mask = 11
 speed = 30
 
 [node name="Cat3" parent="Enemies" index="26" instance=ExtResource("10_skpba")]
-position = Vector2(708, 500)
+position = Vector2(708, 499)
 collision_mask = 11
 speed = 30
 
 [node name="Cat4" parent="Enemies" index="27" instance=ExtResource("10_skpba")]
-position = Vector2(748, 452)
+position = Vector2(748, 451)
 collision_mask = 11
 speed = 30
 
 [node name="Cat5" parent="Enemies" index="28" instance=ExtResource("10_skpba")]
-position = Vector2(672, 460)
+position = Vector2(672, 459)
 collision_mask = 11
 speed = 30
 
 [node name="Cat6" parent="Enemies" index="29" instance=ExtResource("10_skpba")]
-position = Vector2(736, 532)
+position = Vector2(736, 531)
 collision_mask = 11
 speed = 30
 
 [node name="BlackCat" parent="Enemies" index="30" instance=ExtResource("11_4kcps")]
-position = Vector2(768, -156)
+position = Vector2(768, -157)
 
 [node name="BlackCat2" parent="Enemies" index="31" instance=ExtResource("11_4kcps")]
-position = Vector2(800, -140)
+position = Vector2(800, -141)
 
 [node name="BlackCat3" parent="Enemies" index="32" instance=ExtResource("11_4kcps")]
-position = Vector2(844, -184)
+position = Vector2(844, -185)
 
 [node name="Player" parent="." index="6"]
 collision_mask = 11
 
-[node name="PlayerSpawn" parent="." index="7"]
-position = Vector2(404, 202)
-
-[node name="Front" type="TileMapLayer" parent="." index="8"]
-z_index = 2
-tile_map_data = PackedByteArray("AAAsABQAAAADAAAAAAAxABQAAAADAAAAAAAyABQAAAADAAAAAAAiABIAAAADAAAAAAAcABIAAAADAAAAAAAXABIAAAADAAAAAAAwABQAAAAFAAAAAAAvABQAAAAFAAAAAAAjABIAAAAFAAAAAAAeABIAAAAFAAAAAAAVABIAAAAFAAAAAAAyABwAAAAFAAAAAAA7ABwAAAAFAAAAAAA+ABwAAAAFAAAAAAA0AB0AAAAHAAEAAAAuABUAAAAHAAEAAAAtABUAAAAHAAEAAAAzABUAAAAHAAEAAAAhABMAAAAHAAEAAAAdABMAAAAHAAEAAAAYABMAAAAHAAEAAAAPABMAAAAHAAEAAAANABMAAAAHAAEAAAAMABMAAAAHAAEAAAAFABsAAAAJAAAAAAAYAB0AAAAJAAAAAAAJAAwAAAAJAAAAAAAWAPX/AAAJAAAAAAAVAPX/AAAJAAAAAAARAPX/AAAJAAAAAAD7//r/AAAJAAAAAAAZAB4AAAALAAEAAAAaAB4AAAANAAEAAAAEABwAAAANAAEAAAAOABMAAAANAAEAAAAFAA0AAAALAAEAAAAIAPv/AAALAAEAAAAHAPv/AAANAAEAAAAYAPb/AAANAAEAAAAXAPb/AAALAAEAAAAOAPb/AAALAAEAAAAwAB0AAAALAAEAAAAxAB0AAAANAAEAAAALABIAAAAPAAAAAAAGABsAAAAPAAAAAAAGAAwAAAAPAAAAAAAJAPr/AAAPAAAAAAAPAPX/AAAPAAAAAAALAPr/AAABAAAAAAAMAPv/AAAHAAEAAAAKAPX/AAAFAAAAAAALAPX/AAABAAAAAAAQABIAAAABAAAAAAA=")
+[node name="Front" parent="." index="7"]
+tile_map_data = PackedByteArray("AAD7//r/AAAJAAAAAAAEABwAAAANAAEAAAAFAA0AAAALAAEAAAAFABsAAAAJAAAAAAAGAAwAAAAPAAAAAAAGABsAAAAPAAAAAAAHAPv/AAANAAEAAAAIAPv/AAALAAEAAAAJAPr/AAAPAAAAAAAJAAwAAAAJAAAAAAAKAPX/AAAFAAAAAAALAPX/AAABAAAAAAALAPr/AAABAAAAAAALABIAAAAPAAAAAAAMAPv/AAAHAAEAAAAMABMAAAAHAAEAAAANABMAAAAHAAEAAAAOAPb/AAALAAEAAAAOABMAAAANAAEAAAAPAPX/AAAPAAAAAAAPABMAAAAHAAEAAAAQABIAAAABAAAAAAARAPX/AAAJAAAAAAAVAPX/AAAJAAAAAAAVABIAAAAFAAAAAAAWAPX/AAAJAAAAAAAXAPb/AAALAAEAAAAXABIAAAADAAAAAAAYAPb/AAANAAEAAAAYABMAAAAHAAEAAAAYAB0AAAAJAAAAAAAZAB4AAAALAAEAAAAaAB4AAAANAAEAAAAcABIAAAADAAAAAAAdABMAAAAHAAEAAAAeABIAAAAFAAAAAAAhABMAAAAHAAEAAAAiABIAAAADAAAAAAAjABIAAAAFAAAAAAAsABQAAAADAAAAAAAtABUAAAAHAAEAAAAuABUAAAAHAAEAAAAvABQAAAAFAAAAAAAwABQAAAAFAAAAAAAwAB0AAAALAAEAAAAxABQAAAADAAAAAAAxAB0AAAANAAEAAAAyABQAAAADAAAAAAAyABwAAAAFAAAAAAAzABUAAAAHAAEAAAA0AB0AAAAHAAEAAAA7ABwAAAAFAAAAAAA+ABwAAAAFAAAAAAA=")
 tile_set = ExtResource("9_62skd")
 
-[node name="BGM" type="AudioStreamPlayer" parent="." index="10"]
-stream = ExtResource("2_w4w2a")
+[node name="PlayerSpawn" parent="." index="8"]
+position = Vector2(404, 202)
+
+[node name="HUD" parent="CanvasLayer" index="0"]
+metadata/_edit_use_anchors_ = true

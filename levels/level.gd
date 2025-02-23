@@ -9,6 +9,7 @@ var tile_coords = {}
 var Item = preload('res://items/item.tscn')
 
 func _ready():
+	set_process_input(true)
 	$Camera2D.make_current()
 	score_changed.connect($CanvasLayer/HUD._on_score_changed)
 	$Player.dead.connect(self._on_player_dead)
@@ -113,3 +114,12 @@ func find_tile_coords_by_name(tile_set: TileSet, target_name: String) -> Vector2
 						if tile_data and tile_data.get_custom_data("type") == target_name:
 							return coords
 	return Vector2i(-1, -1)
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("pause"):
+		get_tree().paused = not get_tree().paused
+		var hud = $CanvasLayer/HUD
+		if get_tree().paused:
+			hud.show_message("Paused")
+		else:
+			hud.hide_message()
