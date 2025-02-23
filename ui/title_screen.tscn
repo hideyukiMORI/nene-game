@@ -163,12 +163,11 @@ text = "X"
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
-offset_top = 24.0
+offset_top = 16.0
 offset_bottom = 23.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "SETTING"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -199,8 +198,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "SOUND"
 
 [node name="OffButton" type="CheckButton" parent="SettingPanel/ScrollContainer/SettingList/Sound"]
@@ -227,12 +225,11 @@ layout_mode = 2
 custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "BGM"
 
 [node name="BGMValue" type="Label" parent="SettingPanel/ScrollContainer/SettingList/BGM"]
-custom_minimum_size = Vector2(112, 0)
+custom_minimum_size = Vector2(68, 0)
 layout_mode = 2
 text = "000"
 
@@ -251,12 +248,11 @@ layout_mode = 2
 custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "SE"
 
 [node name="SEValue" type="Label" parent="SettingPanel/ScrollContainer/SettingList/SE"]
-custom_minimum_size = Vector2(112, 0)
+custom_minimum_size = Vector2(68, 0)
 layout_mode = 2
 text = "000"
 
@@ -275,8 +271,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_7hamx")
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "FullScreen"
 
 [node name="OffButton" type="CheckButton" parent="SettingPanel/ScrollContainer/SettingList/Fullscreen"]
@@ -297,9 +292,27 @@ alignment = 1
 layout_mode = 2
 
 [node name="HSeparator2" type="HSeparator" parent="SettingPanel/ScrollContainer/SettingList"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 
-[node name="CloseButton" type="Button" parent="SettingPanel/ScrollContainer/SettingList"]
+[node name="Exit" type="HBoxContainer" parent="SettingPanel/ScrollContainer/SettingList"]
 layout_mode = 2
-text = "CLOSE"
+
+[node name="Label" type="Label" parent="SettingPanel/ScrollContainer/SettingList/Exit"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 48
+text = "EXIT"
+
+[node name="CloseButton" type="Button" parent="SettingPanel/ScrollContainer/SettingList/Exit"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "EXIT"
+
+[node name="VSeparator" type="VSeparator" parent="SettingPanel/ScrollContainer/SettingList/Exit"]
+layout_mode = 2
+
+[node name="HSeparator3" type="HSeparator" parent="SettingPanel/ScrollContainer/SettingList"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
