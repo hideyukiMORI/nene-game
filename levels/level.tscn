@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://b67i3tfkkuedg" path="res://player/player.tscn" id="3_hhvqy"]
 [ext_resource type="PackedScene" uid="uid://dygt0jtnlvuqw" path="res://ui/hud.tscn" id="4_ujjet"]
 [ext_resource type="TileSet" uid="uid://bdb5164exifvc" path="res://assets/tile_set/items.tres" id="5_xerwc"]
-[ext_resource type="AudioStream" uid="uid://b71wxguwpe0rh" path="res://assets/audio/bgm/stage_01.wav" id="7_b8ghi"]
+[ext_resource type="PackedScene" uid="uid://b50c7navctclb" path="res://ui/setting_panel.tscn" id="8_woui0"]
 
 [node name="Level" type="Node2D"]
 process_mode = 3
@@ -59,6 +59,7 @@ z_index = 1
 
 [node name="Front" type="TileMapLayer" parent="."]
 process_mode = 1
+z_index = 1
 
 [node name="PlayerSpawn" type="Marker2D" parent="."]
 process_mode = 1
@@ -68,10 +69,9 @@ process_mode = 1
 [node name="HUD" parent="CanvasLayer" instance=ExtResource("4_ujjet")]
 offset_bottom = 94.0
 
+[node name="SettingPanel" parent="CanvasLayer" instance=ExtResource("8_woui0")]
+
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2.5, 2.5)
-
-[node name="BGM" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("7_b8ghi")
 
 [connection signal="score_changed" from="." to="CanvasLayer/HUD" method="_on_score_changed"]

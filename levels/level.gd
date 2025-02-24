@@ -1,27 +1,30 @@
 extends Node2D
 
+@onready var settings_panel = $CanvasLayer/SettingPanel
+
 signal score_changed(value: int)
 
 var score = 0 : set = set_score
 var cell_size = Vector2(16, 16)
 var tile_coords = {}
+var is_paused = false
 
 var Item = preload('res://items/item.tscn')
 
 func _ready():
+	score = 0
 	set_process_input(true)
 	$Camera2D.make_current()
-	score_changed.connect($CanvasLayer/HUD._on_score_changed)
-	$Player.dead.connect(self._on_player_dead)
-	score = 0
-	$Items.hide()
-	$Player.reset($PlayerSpawn.position)
 	set_camera_limits()
+	$Player.dead.connect(self._on_player_dead)
+	$Player.reset($PlayerSpawn.position)
+	$Items.hide()
 	spawn_items()
-	# create_ladders()
+
 	var tile_set = load("res://assets/tile_set/items.tres")
 	tile_coords["coin_01"] = find_tile_coords_by_name(tile_set, "coin_01")
-	spawn_items()
+	AudioManager.play_bgm("STAGE_01")
+	
 
 func set_camera_limits() -> void:
 	var map_size = $World.get_used_rect()
@@ -85,6 +88,7 @@ func set_score(value):
 # 	GameState.next_level()
 	
 func _on_player_dead():
+	AudioManager.stop_all()
 	GameState.restart()
 
 func _on_ladders_body_entered(body):
@@ -116,10 +120,14 @@ func find_tile_coords_by_name(tile_set: TileSet, target_name: String) -> Vector2
 	return Vector2i(-1, -1)
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause"):
+	if not settings_panel.visible and event.is_action_pressed("pause"):
 		get_tree().paused = not get_tree().paused
+		is_paused = get_tree().paused
+		$CanvasLayer/SettingPanel.is_paused = is_paused
 		var hud = $CanvasLayer/HUD
 		if get_tree().paused:
 			hud.show_message("Paused")
+			AudioManager.pause_all()
 		else:
 			hud.hide_message()
+			AudioManager.resume_all()

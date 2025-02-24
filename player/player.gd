@@ -39,7 +39,8 @@ func reset(pos) -> void:
 
 func change_state(new_state: State):
 	if state == State.RUN and new_state != State.RUN:
-		$DashSound.stop()  # Stop the dash sound when leaving RUN state
+		# $DashSound.stop()  # Stop the dash sound when leaving RUN state
+		AudioManager.stop_se("DASH")
 
 	state = new_state
 	match state:
@@ -49,7 +50,7 @@ func change_state(new_state: State):
 			new_anim = "walk"
 		State.RUN:
 			new_anim = "run"
-			$DashSound.play()  # Play the dash sound when entering RUN state
+			AudioManager.play_se("DASH", true)
 		State.CROUCH:
 			new_anim = 'crouch'
 		State.HURT:
@@ -175,7 +176,7 @@ func get_input(delta: float):
 
 	if jump:
 		if is_on_floor() or coyote_time:
-			$JumpSound.play()
+			AudioManager.play_se("JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed
 			coyote_time = false
@@ -183,13 +184,13 @@ func get_input(delta: float):
 			jump_count += 1
 				
 		elif !is_on_floor() and !coyote_time and jump_count < max_jumps:
-			$HighJumpSound.play()
+			AudioManager.play_se("HIGH_JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed / 1.5
 			jump_count += 1
 
 		elif is_on_wall():
-			$JumpSound.play()
+			AudioManager.play_se("JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed
 			velocity.x = -target_velocity_x
@@ -212,8 +213,8 @@ func get_input(delta: float):
 	if state in [State.IDLE, State.WALK, State.RUN] and not is_on_floor():
 		change_state(State.JUMP)
 
-	if Input.is_action_pressed("select"):
-		get_tree().quit()
+	# if Input.is_action_pressed("select"):
+	# 	get_tree().quit()
 
 func hurt() -> void:
 	# if state != State.HURT:
