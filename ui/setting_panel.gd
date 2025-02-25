@@ -42,8 +42,8 @@ func _ready() -> void:
 	# 初期状態を設定
 	_update_button_states()
 	# ラベルの初期値を設定
-	_update_label_bgm_volume()
-	_update_label_se_volume()
+	_update_label_bgm_volume(false)
+	_update_label_se_volume(false)
 
 	# スライダーの初期値を設定
 	volume_slider_bgm.value = bgm_volume
@@ -114,9 +114,11 @@ func _input(event: InputEvent) -> void:
 		if event.is_action_pressed("ui_down"):
 			current_selection = (current_selection + 1) % menu_labels.size()
 			_update_menu_selection()
+			AudioManager.play_se("CURSOR")
 		elif event.is_action_pressed("ui_up"):
 			current_selection = (current_selection - 1 + menu_labels.size()) % menu_labels.size()
 			_update_menu_selection()
+			AudioManager.play_se("CURSOR")
 		elif event.is_action_pressed("ui_right") or event.is_action_pressed("jump"):
 			_handle_right_action()
 		elif event.is_action_pressed("ui_left") or event.is_action_pressed("dash"):
@@ -143,7 +145,7 @@ func _on_se_volume_slider_changed(value: float) -> void:
 	# ラベルを更新
 	_update_label_se_volume()
 
-func _update_label_bgm_volume() -> void:
+func _update_label_bgm_volume(play_se: bool = true) -> void:
 	# bgm_volumeに応じてラベルを更新
 	if bgm_volume == 0:
 		label_bgm_volume.text = "OFF"
@@ -151,8 +153,10 @@ func _update_label_bgm_volume() -> void:
 		label_bgm_volume.text = "MAX"
 	else:
 		label_bgm_volume.text = str(bgm_volume).pad_zeros(3)
+		if play_se:
+			AudioManager.play_se("CURSOR")
 
-func _update_label_se_volume() -> void:
+func _update_label_se_volume(play_se: bool = true) -> void:
 	# se_volumeに応じてラベルを更新
 	if se_volume == 0:
 		label_se_volume.text = "OFF"
@@ -160,6 +164,8 @@ func _update_label_se_volume() -> void:
 		label_se_volume.text = "MAX"
 	else:
 		label_se_volume.text = str(se_volume).pad_zeros(3)
+		if play_se:
+			AudioManager.play_se("CURSOR")
 
 func _update_menu_selection() -> void:
 	for i in range(menu_labels.size()):
@@ -179,6 +185,7 @@ func _handle_right_action() -> void:
 			sound_enabled = !sound_enabled
 			button_sound_on.set_pressed(sound_enabled)
 			button_sound_off.set_pressed(!sound_enabled)
+			AudioManager.play_se("CURSOR")
 		1: # BGM
 			bgm_volume = min(bgm_volume + 10, 100)
 			volume_slider_bgm.value = bgm_volume
@@ -187,8 +194,10 @@ func _handle_right_action() -> void:
 			volume_slider_se.value = se_volume
 		3: # FULLSCREEN
 			_toggle_fullscreen()
+			AudioManager.play_se("CURSOR")
 		4: # EXIT
 			_toggle_settings_panel_visibility()
+			AudioManager.play_se("CURSOR")
 
 func _handle_left_action() -> void:
 	match current_selection:
@@ -196,6 +205,7 @@ func _handle_left_action() -> void:
 			sound_enabled = !sound_enabled
 			button_sound_on.set_pressed(sound_enabled)
 			button_sound_off.set_pressed(!sound_enabled)
+			AudioManager.play_se("CURSOR")
 		1: # BGM
 			bgm_volume = max(bgm_volume - 10, 0)
 			volume_slider_bgm.value = bgm_volume
@@ -204,8 +214,10 @@ func _handle_left_action() -> void:
 			volume_slider_se.value = se_volume
 		3: # FULLSCREEN
 			_toggle_fullscreen()
+			AudioManager.play_se("CURSOR")
 		4: # EXIT
 			_toggle_settings_panel_visibility()
+			AudioManager.play_se("CURSOR")
 
 
 func _toggle_fullscreen() -> void:

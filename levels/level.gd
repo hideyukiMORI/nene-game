@@ -19,10 +19,10 @@ func _ready():
 	$Player.dead.connect(self._on_player_dead)
 	$Player.reset($PlayerSpawn.position)
 	$Items.hide()
-	spawn_items()
 
 	var tile_set = load("res://assets/tile_set/items.tres")
 	tile_coords["coin_01"] = find_tile_coords_by_name(tile_set, "coin_01")
+	spawn_items()
 	AudioManager.play_bgm("STAGE_01")
 	
 
@@ -127,7 +127,7 @@ func _input(event: InputEvent) -> void:
 		var hud = $CanvasLayer/HUD
 		if get_tree().paused:
 			hud.show_message("Paused")
-			AudioManager.pause_all()
+			AudioManager.pause_all_with_se()
 		else:
 			hud.hide_message()
 			AudioManager.resume_all()

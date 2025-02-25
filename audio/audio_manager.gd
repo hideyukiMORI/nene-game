@@ -18,6 +18,8 @@ var bgm_paths = {
 
 var se_paths = {
 	"START": "res://assets/audio/se/start.wav",
+	"PAUSE": "res://assets/audio/se/pause.wav",
+	"CURSOR": "res://assets/audio/se/cursor.wav",
 	"JUMP": "res://assets/audio/se/jump_02.wav",
 	"HIGH_JUMP": "res://assets/audio/se/jump_01.wav",
 	"DASH": "res://assets/audio/se/dash_01.wav"
@@ -120,6 +122,10 @@ func toggle_sound(enabled: bool) -> void:
 		# BGMが停止されていた場合に再開
 		if not bgm_player.playing:
 			bgm_player.play()
+
+func pause_all_with_se() -> void:
+	pause_all()
+	play_se("PAUSE")
 
 func pause_all() -> void:
 	pause_bgm()
