@@ -2,8 +2,8 @@ extends Node
 
 @onready var bgm_player = AudioStreamPlayer.new()
 
-var bgm_volume: float = 1.0
-var se_volume: float = 1.0
+var bgm_volume: float = 0.5
+var se_volume: float = 0.5
 var sound_enabled: bool = true
 
 var current_bgm: String = ""
@@ -107,6 +107,7 @@ func resume_se() -> void:
 
 func set_bgm_volume(volume: float) -> void:
 	bgm_volume = volume
+	print("bgm_volume: ", bgm_volume)
 	if is_instance_valid(bgm_player):
 		bgm_player.volume_db = linear_to_db(bgm_volume)
 
