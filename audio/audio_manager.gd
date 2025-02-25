@@ -22,7 +22,9 @@ var se_paths = {
 	"CURSOR": "res://assets/audio/se/cursor.wav",
 	"JUMP": "res://assets/audio/se/jump_02.wav",
 	"HIGH_JUMP": "res://assets/audio/se/jump_01.wav",
-	"DASH": "res://assets/audio/se/dash_01.wav"
+	"DASH": "res://assets/audio/se/dash_01.wav",
+	"COIN": "res://assets/audio/se/coin_01.wav",
+	"PUCHI": "res://assets/audio/se/puchi.mp3"
 }
 
 func _ready() -> void:

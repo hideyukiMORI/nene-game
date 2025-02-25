@@ -20,6 +20,7 @@ func _on_Collectible_body_entered(_body: Node) -> void:
 	# print('pickup!!!')
 	emit_signal('pickup')
 	$AnimationPlayer.play('pickup')
-	$PickupSound.play()
+	# $PickupSound.play()
+	AudioManager.play_se("COIN")
 	await $AnimationPlayer.animation_finished
 	queue_free()
