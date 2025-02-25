@@ -15,12 +15,10 @@ extends Control
 
 var dragging = false
 var last_mouse_position = Vector2()
-var sound_enabled = true
-var bgm_volume = 50
-var se_volume = 50
-var updating_fullscreen = false
 var current_selection = 0
 var is_paused = false
+var updating_fullscreen = false
+var sound_enabled = false
 
 @onready var menu_labels = [
 	$Panel/ScrollContainer/SettingList/Sound/Label,
@@ -45,8 +43,8 @@ func _initialize_panel() -> void:
 	_update_button_states()
 	_update_label_bgm_volume(false)
 	_update_label_se_volume(false)
-	volume_slider_bgm.value = bgm_volume
-	volume_slider_se.value = se_volume
+	volume_slider_bgm.value = AudioManager.bgm_volume * MAX_VOLUME
+	volume_slider_se.value = AudioManager.se_volume * MAX_VOLUME
 
 func _toggle_buttons(buttons: Array, toggle_mode: bool) -> void:
 	for button in buttons:
@@ -55,44 +53,64 @@ func _toggle_buttons(buttons: Array, toggle_mode: bool) -> void:
 func _connect_signals() -> void:
 	button_sound_on.connect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_on))
 	button_sound_off.connect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_off))
-	volume_slider_bgm.connect("value_changed", Callable(self, "_on_bgm_volume_slider_changed"))
-	volume_slider_se.connect("value_changed", Callable(self, "_on_se_volume_slider_changed"))
+	volume_slider_bgm.connect("value_changed", Callable(self, "_on_bgm_slider_value_changed"))
+	volume_slider_se.connect("value_changed", Callable(self, "_on_se_slider_value_changed"))
 	button_fullscreen_on.connect("toggled", Callable(self, "_on_button_toggled").bind(button_fullscreen_on))
 	button_fullscreen_off.connect("toggled", Callable(self, "_on_button_toggled").bind(button_fullscreen_off))
 	button_close.connect("pressed", Callable(self, "_toggle_settings_panel_visibility"))
 	icon_close.connect("pressed", Callable(self, "_toggle_settings_panel_visibility"))
 
 func _update_button_states() -> void:
-	button_sound_on.set_pressed(sound_enabled)
-	button_sound_off.set_pressed(!sound_enabled)
+	# 一時的にシグナルを切断
+	button_sound_on.disconnect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_on))
+	button_sound_off.disconnect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_off))
+
+	button_sound_on.set_pressed(AudioManager.sound_enabled)
+	button_sound_off.set_pressed(!AudioManager.sound_enabled)
+
+	# シグナルを再接続
+	button_sound_on.connect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_on))
+	button_sound_off.connect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_off))
+
 	var is_fullscreen = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 	button_fullscreen_on.set_pressed(is_fullscreen)
 	button_fullscreen_off.set_pressed(!is_fullscreen)
 
-func _on_button_toggled(button_pressed: bool, button: Button) -> void:
+func _on_button_toggled(_button_pressed: bool, button: Button) -> void:
 	if updating_fullscreen:
 		return
 
 	if button == button_sound_on or button == button_sound_off:
-		_toggle_sound(button_pressed, button)
-	elif button == button_fullscreen_on or button == button_fullscreen_off:
-		_toggle_fullscreen()
+		# 一時的にシグナルを切断してボタンの状態を更新
+		button_sound_on.disconnect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_on))
+		button_sound_off.disconnect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_off))
 
+		AudioManager.toggle_sound(not AudioManager.sound_enabled)
+		_update_button_states()
+
+		# シグナルを再接続
+		button_sound_on.connect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_on))
+		button_sound_off.connect("toggled", Callable(self, "_on_button_toggled").bind(button_sound_off))
+
+		current_selection = 0  # Soundボタンのインデックス
+		# _update_menu_selection()
+		
+	elif button == button_fullscreen_on or button == button_fullscreen_off:
+		_toggle_fullscreen(button == button_fullscreen_on)
+		current_selection = 3  # Fullscreenボタンのインデックス
+		_update_menu_selection()
 	# Play sound effect when toggling
 	AudioManager.play_se("CURSOR")
 
-func _toggle_sound(button_pressed: bool, button: Button) -> void:
-	sound_enabled = button_pressed if button == button_sound_on else !button_pressed
-	button_sound_on.set_pressed(sound_enabled)
-	button_sound_off.set_pressed(!sound_enabled)
-
-func _toggle_fullscreen() -> void:
+func _toggle_fullscreen(enable_fullscreen: bool) -> void:
 	updating_fullscreen = true
-	var is_fullscreen = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
-	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if !is_fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
-	is_fullscreen = !is_fullscreen
-	button_fullscreen_on.set_pressed(is_fullscreen)
-	button_fullscreen_off.set_pressed(!is_fullscreen)
+	var current_mode = DisplayServer.window_get_mode()
+	var new_mode = DisplayServer.WINDOW_MODE_FULLSCREEN if enable_fullscreen else DisplayServer.WINDOW_MODE_WINDOWED
+	if current_mode != new_mode:
+		DisplayServer.window_set_mode(new_mode)
+		AudioManager.play_se("CURSOR")
+	button_fullscreen_on.set_pressed(enable_fullscreen)
+	button_fullscreen_off.set_pressed(not enable_fullscreen)
 	updating_fullscreen = false
 
 func _input(event: InputEvent) -> void:
@@ -139,21 +157,28 @@ func _toggle_settings_panel_visibility() -> void:
 	get_tree().paused = settings_panel.visible
 	_update_menu_selection()
 
-func _on_bgm_volume_slider_changed(value: float) -> void:
-	bgm_volume = int(value)
+func _on_bgm_slider_value_changed(value: float) -> void:
+	AudioManager.bgm_volume = value / MAX_VOLUME
 	_update_label_bgm_volume()
+	current_selection = 1  # BGMスライダーのインデックス
+	# When the BGM slider value changes, remove focus from the slider
+	volume_slider_bgm.release_focus()
+	_update_menu_selection()
 
-func _on_se_volume_slider_changed(value: float) -> void:
-	se_volume = int(value)
+func _on_se_slider_value_changed(value: float) -> void:
+	AudioManager.se_volume = value / MAX_VOLUME
 	_update_label_se_volume()
+	current_selection = 2  # SEスライダーのインデックス
+	volume_slider_bgm.release_focus()
+	_update_menu_selection()
 
 func _update_label_bgm_volume(play_se: bool = true) -> void:
-	label_bgm_volume.text = _get_volume_text(bgm_volume)
+	label_bgm_volume.text = _get_volume_text(int(AudioManager.bgm_volume * MAX_VOLUME))
 	if play_se:
 		AudioManager.play_se("CURSOR")
 
 func _update_label_se_volume(play_se: bool = true) -> void:
-	label_se_volume.text = _get_volume_text(se_volume)
+	label_se_volume.text = _get_volume_text(int(AudioManager.se_volume * MAX_VOLUME))
 	if play_se:
 		AudioManager.play_se("CURSOR")
 
@@ -174,19 +199,28 @@ func _remove_prefix(text: String, prefix: String) -> String:
 
 func _handle_right_action() -> void:
 	match current_selection:
-		0: _toggle_sound(not sound_enabled, button_sound_on)
+		0: 
+			if !AudioManager.sound_enabled:
+				AudioManager.toggle_sound(true)
+				AudioManager.play_se("CURSOR")
+			_update_button_states()
 		1: _change_volume(volume_slider_bgm, VOLUME_STEP)
 		2: _change_volume(volume_slider_se, VOLUME_STEP)
-		3: _toggle_fullscreen()
+		3: _toggle_fullscreen(true)
 		4: _toggle_settings_panel_visibility()
 
 func _handle_left_action() -> void:
 	match current_selection:
-		0: _toggle_sound(not sound_enabled, button_sound_on)
+		0: 
+			if AudioManager.sound_enabled:
+				AudioManager.toggle_sound(false)
+				AudioManager.play_se("CURSOR")
+				_update_button_states()
 		1: _change_volume(volume_slider_bgm, -VOLUME_STEP)
 		2: _change_volume(volume_slider_se, -VOLUME_STEP)
-		3: _toggle_fullscreen()
+		3: _toggle_fullscreen(false)
 		4: _toggle_settings_panel_visibility()
 
 func _change_volume(slider: Slider, step: int) -> void:
 	slider.value = clamp(slider.value + step, MIN_VOLUME, MAX_VOLUME)
+	slider.release_focus()
