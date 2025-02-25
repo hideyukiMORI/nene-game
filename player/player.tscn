@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b67i3tfkkuedg"]
+[gd_scene load_steps=18 format=3 uid="uid://b67i3tfkkuedg"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_jkgy0"]
 [ext_resource type="Texture2D" uid="uid://46vgihg4jaw5" path="res://assets/sprites/nene_01.png" id="1_n6y18"]
@@ -138,6 +138,27 @@ _data = {
 "walk": SubResource("Animation_i63ue")
 }
 
+[sub_resource type="Gradient" id="Gradient_hi20j"]
+offsets = PackedFloat32Array(0, 0.986248)
+colors = PackedColorArray(0.596078, 1, 0.956863, 0.0745098, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_iam2l"]
+gradient = SubResource("Gradient_hi20j")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_04hhp"]
+particle_flag_damping_as_friction = true
+angle_min = -720.0
+angle_max = 720.0
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+radial_accel_min = -2.23517e-06
+radial_accel_max = -2.23517e-06
+scale_min = 30.75
+scale_max = 30.75
+color_ramp = SubResource("GradientTexture1D_iam2l")
+hue_variation_min = -0.24
+hue_variation_max = 0.08
+
 [sub_resource type="Gradient" id="Gradient_bbkyr"]
 colors = PackedColorArray(0.964888, 0.779684, 0.414885, 1, 0.705882, 0.596078, 0.341176, 0)
 
@@ -174,6 +195,17 @@ shape = SubResource("RectangleShape2D_a3bix")
 libraries = {
 "": SubResource("AnimationLibrary_4l054")
 }
+
+[node name="DashTrail" type="GPUParticles2D" parent="."]
+z_index = -1
+position = Vector2(-14, 1)
+scale = Vector2(0.6, 1)
+skew = 0.322886
+emitting = false
+amount = 30
+process_material = SubResource("ParticleProcessMaterial_04hhp")
+lifetime = 0.2
+trail_lifetime = 0.2
 
 [node name="Dust" type="GPUParticles2D" parent="."]
 position = Vector2(-2, 16)

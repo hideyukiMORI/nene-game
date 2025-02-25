@@ -17,8 +17,6 @@ var dragging = false
 var last_mouse_position = Vector2()
 var current_selection = 0
 var is_paused = false
-var updating_fullscreen = false
-var sound_enabled = false
 
 @onready var menu_labels = [
 	$Panel/ScrollContainer/SettingList/Sound/Label,
@@ -98,8 +96,10 @@ func _on_sound_on_pressed() -> void:
 		_update_menu_selection()
 		return
 	AudioManager.sound_enabled = true
+	print("Sound enabled set to true")
 	_update_button_states()
 	_update_menu_selection()
+	_save_settings()
 	AudioManager.play_se("CURSOR")
 
 func _on_sound_off_pressed() -> void:
@@ -113,8 +113,10 @@ func _on_sound_off_pressed() -> void:
 		_update_menu_selection()
 		return
 	AudioManager.sound_enabled = false
+	print("Sound enabled set to false")
 	_update_button_states()
 	_update_menu_selection()
+	_save_settings()
 	AudioManager.play_se("CURSOR")
 
 func _on_fullscreen_on_pressed() -> void:
@@ -150,7 +152,6 @@ func _set_fullscreen_mode(enable_fullscreen: bool) -> void:
 	ウィンドウのモードをフルスクリーンまたはウィンドウモードに設定します。
 	:param enable_fullscreen: フルスクリーンを有効にするかどうかを示すブール値。
 	"""
-	updating_fullscreen = true
 	var current_mode = DisplayServer.window_get_mode()
 	var new_mode = DisplayServer.WINDOW_MODE_FULLSCREEN if enable_fullscreen else DisplayServer.WINDOW_MODE_WINDOWED
 	if current_mode != new_mode:
@@ -158,7 +159,6 @@ func _set_fullscreen_mode(enable_fullscreen: bool) -> void:
 		AudioManager.play_se("CURSOR")
 	button_fullscreen_on.set_pressed(enable_fullscreen)
 	button_fullscreen_off.set_pressed(!enable_fullscreen)
-	updating_fullscreen = false
 	_save_settings()
 
 func _input(event: InputEvent) -> void:
@@ -308,6 +308,7 @@ func _handle_right_action() -> void:
 			if !AudioManager.sound_enabled:
 				AudioManager.toggle_sound(true)
 				AudioManager.play_se("CURSOR")
+			_save_settings()
 			_update_button_states()
 		1: _change_volume(volume_slider_bgm, VOLUME_STEP)
 		2: _change_volume(volume_slider_se, VOLUME_STEP)
@@ -323,7 +324,8 @@ func _handle_left_action() -> void:
 			if AudioManager.sound_enabled:
 				AudioManager.toggle_sound(false)
 				AudioManager.play_se("CURSOR")
-				_update_button_states()
+			_save_settings()
+			_update_button_states()
 		1: _change_volume(volume_slider_bgm, -VOLUME_STEP)
 		2: _change_volume(volume_slider_se, -VOLUME_STEP)
 		3: _set_fullscreen_mode(false)
@@ -347,7 +349,11 @@ func _save_settings() -> void:
 	config.set_value("audio", "se_volume", AudioManager.se_volume)
 	config.set_value("audio", "sound_enabled", AudioManager.sound_enabled)
 	config.set_value("display", "fullscreen", DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN)
-	config.save("user://settings.cfg")
+	var err = config.save("user://settings.cfg")
+	if err == OK:
+		print("Settings saved successfully")
+	else:
+		print("Failed to save settings")
 
 func _load_settings() -> void:
 	"""
@@ -356,11 +362,16 @@ func _load_settings() -> void:
 	var config = ConfigFile.new()
 	var err = config.load("user://settings.cfg")
 	if err == OK:
+		print("settings.cfg loaded")
 		AudioManager.set_bgm_volume(config.get_value("audio", "bgm_volume", 1.0))
 		AudioManager.set_se_volume(config.get_value("audio", "se_volume", 1.0))
-		AudioManager.toggle_sound(config.get_value("audio", "sound_enabled", true))
+		var sound_enabled = config.get_value("audio", "sound_enabled", true)
+		print("Loaded sound_enabled: ", sound_enabled)
+		AudioManager.toggle_sound(sound_enabled)
 		var fullscreen = config.get_value("display", "fullscreen", false)
 		_set_fullscreen_mode(fullscreen)
+	else:
+		print("Failed to load settings.cfg")
 
 func _check_config_file() -> void:
 	"""

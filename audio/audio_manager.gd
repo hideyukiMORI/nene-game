@@ -50,6 +50,14 @@ func stop_bgm() -> void:
 	current_bgm = ""
 	bgm_position = 0.0
 
+func reset_bgm() -> void:
+	if is_instance_valid(bgm_player):
+		bgm_player.stop()
+		bgm_player.stream = null
+	current_bgm = ""
+	bgm_position = 0.0
+
+
 func pause_bgm() -> void:
 	if is_instance_valid(bgm_player) and bgm_player.playing:
 		bgm_position = bgm_player.get_playback_position()

@@ -1,7 +1,6 @@
 extends CharacterBody2D
 
-@export var run_speed: int = 350
-@export var dash_speed: int = 700  # New export variable for dash speed
+@export var dash_speed: int = 350
 @export var jump_speed: int = -500
 @export var gravity: int = 1000
 @export var climb_speed: int = 50
@@ -40,6 +39,7 @@ func reset(pos) -> void:
 func change_state(new_state: State):
 	if state == State.DASH and new_state != State.DASH:
 		AudioManager.stop_se("DASH")
+		$DashTrail.emitting = false  # DASH状態を離れるときにパーティクルを停止
 
 	state = new_state
 	match state:
@@ -50,6 +50,8 @@ func change_state(new_state: State):
 		State.DASH:
 			new_anim = "run"
 			AudioManager.play_se("DASH", true)
+			$DashTrail.emitting = true  # DASH状態のときにパーティクルを有効にする
+			update_particle_direction()  # パーティクルの方向を更新
 		State.CROUCH:
 			new_anim = 'crouch'
 		State.HURT:
@@ -133,10 +135,10 @@ func get_input(delta: float):
 
 	var target_velocity_x = 0
 	if right:
-		target_velocity_x += run_speed
+		target_velocity_x += dash_speed
 		$Sprite2D.flip_h = false
 	if left:
-		target_velocity_x -= run_speed
+		target_velocity_x -= dash_speed
 		$Sprite2D.flip_h = true
 
 	if dash:
@@ -198,9 +200,9 @@ func get_input(delta: float):
 	if state in [State.IDLE, State.CROUCH] and velocity.x != 0:
 		change_state(State.WALK)
 
-	if state == State.WALK and abs(velocity.x) > run_speed:
+	if state == State.WALK and abs(velocity.x) > dash_speed:
 		change_state(State.DASH)
-	if state == State.DASH and abs(velocity.x) <= run_speed:
+	if state == State.DASH and abs(velocity.x) <= dash_speed:
 		change_state(State.WALK)
 
 	if state == State.DASH and !dash and (right or left):
@@ -220,6 +222,26 @@ func hurt() -> void:
 
 func _on_CoyoteTimer_timeout() -> void:
 	coyote_time = false
+
+func update_particle_direction():
+	# プレイヤーの向きに応じてパーティクルの方向を設定
+	var particle_material = $DashTrail.process_material as ParticleProcessMaterial
+	if $Sprite2D.flip_h:
+		particle_material.direction = Vector3(-1, 0, 0)  # 左を向いているとき
+		$DashTrail.position.x = 14  # 右を向いているとき
+		# $DashTrail.rotation_degrees = 0
+		$DashTrail.skew = 18.5
+	else:
+		particle_material.direction = Vector3(1, 0, 0)  # 右を向いているとき
+		$DashTrail.position.x = -14  # 左を向いているとき
+		# $DashTrail.rotation_degrees = -180
+		$DashTrail.skew = -18.5
+
+
+
+
+
+
 
 
 

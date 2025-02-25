@@ -88,7 +88,8 @@ func set_score(value):
 # 	GameState.next_level()
 	
 func _on_player_dead():
-	AudioManager.stop_all()
+	AudioManager.reset_bgm()
+
 	GameState.restart()
 
 func _on_ladders_body_entered(body):
