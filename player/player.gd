@@ -12,7 +12,7 @@ extends CharacterBody2D
 signal life_changed
 signal dead
 
-enum State {IDLE, WALK, RUN, JUMP, HURT, DEAD, CROUCH, CLIMB}
+enum State {IDLE, WALK, DASH, JUMP, HURT, DEAD, CROUCH, CLIMB}
 var state: State = State.IDLE
 var anim: String = ""
 var new_anim: String = ""
@@ -38,8 +38,7 @@ func reset(pos) -> void:
 	change_state(State.IDLE)
 
 func change_state(new_state: State):
-	if state == State.RUN and new_state != State.RUN:
-		# $DashSound.stop()  # Stop the dash sound when leaving RUN state
+	if state == State.DASH and new_state != State.DASH:
 		AudioManager.stop_se("DASH")
 
 	state = new_state
@@ -48,7 +47,7 @@ func change_state(new_state: State):
 			new_anim = "idle"
 		State.WALK:
 			new_anim = "walk"
-		State.RUN:
+		State.DASH:
 			new_anim = "run"
 			AudioManager.play_se("DASH", true)
 		State.CROUCH:
@@ -200,17 +199,14 @@ func get_input(delta: float):
 		change_state(State.WALK)
 
 	if state == State.WALK and abs(velocity.x) > run_speed:
-		change_state(State.RUN)
-	if state == State.RUN and abs(velocity.x) <= run_speed:
+		change_state(State.DASH)
+	if state == State.DASH and abs(velocity.x) <= run_speed:
 		change_state(State.WALK)
 
-	if state == State.RUN and !dash and (right or left):
+	if state == State.DASH and !dash and (right or left):
 		change_state(State.WALK)
 
-	if state in [State.RUN, State.WALK] and velocity.x == 0:
-		change_state(State.IDLE)
-
-	if state in [State.IDLE, State.WALK, State.RUN] and not is_on_floor():
+	if state in [State.IDLE, State.WALK, State.DASH] and not is_on_floor():
 		change_state(State.JUMP)
 
 	# if Input.is_action_pressed("select"):
