@@ -34,14 +34,15 @@ func _ready() -> void:
 	set_process_priority(0)  # Optional: Set priority if needed
 
 func play_bgm(bgm_key: String) -> void:
-	if sound_enabled and bgm_key in bgm_paths:
-		if current_bgm != bgm_key:
+	if bgm_key in bgm_paths and current_bgm != bgm_key:
+		bgm_player.stop()
+		bgm_player.stream = load(bgm_paths[bgm_key])
+		bgm_player.volume_db = linear_to_db(bgm_volume)
+		bgm_player.play()
+		if !sound_enabled:
 			bgm_player.stop()
-			bgm_player.stream = load(bgm_paths[bgm_key])
-			bgm_player.volume_db = linear_to_db(bgm_volume)
-			bgm_player.play()
-			current_bgm = bgm_key
-			bgm_position = 0.0
+		current_bgm = bgm_key
+		bgm_position = 0.0
 
 func stop_bgm() -> void:
 	if is_instance_valid(bgm_player):
@@ -109,7 +110,6 @@ func resume_se() -> void:
 
 func set_bgm_volume(volume: float) -> void:
 	bgm_volume = volume
-	print("bgm_volume: ", bgm_volume)
 	if is_instance_valid(bgm_player):
 		bgm_player.volume_db = linear_to_db(bgm_volume)
 

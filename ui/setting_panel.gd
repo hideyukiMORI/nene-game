@@ -1,6 +1,6 @@
 extends Control
 
-@onready var settings_panel = self  # ルートノードを指す
+@onready var settings_panel = self
 @onready var scroll_container = $Panel/ScrollContainer
 @onready var button_sound_on = $Panel/ScrollContainer/SettingList/Sound/OnButton
 @onready var button_sound_off = $Panel/ScrollContainer/SettingList/Sound/OffButton
@@ -37,9 +37,11 @@ func _ready() -> void:
 	設定パネルを初期化し、パネルの可視性を設定し、シグナルを接続し、
 	メニュー選択を更新します。
 	"""
+	_load_settings()
 	_initialize_panel()
 	_connect_signals()
 	_update_menu_selection()
+	_check_config_file()
 
 func _initialize_panel() -> void:
 	"""
@@ -120,7 +122,7 @@ func _on_fullscreen_on_pressed() -> void:
 	フルスクリーンオンボタンが押されたときのイベントを処理します。ウィンドウを
 	フルスクリーンモードに設定します。
 	"""
-	current_selection = 3  # Fullscreenボタンのインデックス
+	current_selection = 3
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
 		button_fullscreen_on.set_pressed(true)
 		_update_menu_selection()
@@ -134,7 +136,7 @@ func _on_fullscreen_off_pressed() -> void:
 	フルスクリーンオフボタンが押されたときのイベントを処理します。ウィンドウを
 	ウィンドウモードに設定します。
 	"""
-	current_selection = 3  # Fullscreenボタンのインデックス
+	current_selection = 3
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
 		button_fullscreen_off.set_pressed(true)
 		_update_menu_selection()
@@ -157,6 +159,7 @@ func _set_fullscreen_mode(enable_fullscreen: bool) -> void:
 	button_fullscreen_on.set_pressed(enable_fullscreen)
 	button_fullscreen_off.set_pressed(!enable_fullscreen)
 	updating_fullscreen = false
+	_save_settings()
 
 func _input(event: InputEvent) -> void:
 	"""
@@ -232,9 +235,10 @@ func _on_bgm_slider_value_changed(value: float) -> void:
 	"""
 	AudioManager.set_bgm_volume(value / MAX_VOLUME)
 	_update_label_bgm_volume()
-	current_selection = 1  # BGMスライダーのインデックス
+	current_selection = 1
 	volume_slider_bgm.release_focus()
 	_update_menu_selection()
+	_save_settings()
 
 func _on_se_slider_value_changed(value: float) -> void:
 	"""
@@ -243,9 +247,10 @@ func _on_se_slider_value_changed(value: float) -> void:
 	"""
 	AudioManager.set_se_volume(value / MAX_VOLUME)
 	_update_label_se_volume()
-	current_selection = 2  # SEスライダーのインデックス
+	current_selection = 2
 	volume_slider_bgm.release_focus()
 	_update_menu_selection()
+	_save_settings()
 
 func _update_label_bgm_volume(play_se: bool = true) -> void:
 	"""
@@ -332,3 +337,44 @@ func _change_volume(slider: Slider, step: int) -> void:
 	"""
 	slider.value = clamp(slider.value + step, MIN_VOLUME, MAX_VOLUME)
 	slider.release_focus()
+
+func _save_settings() -> void:
+	"""
+	現在のオーディオ設定とフルスクリーン設定をファイルに保存します。
+	"""
+	var config = ConfigFile.new()
+	config.set_value("audio", "bgm_volume", AudioManager.bgm_volume)
+	config.set_value("audio", "se_volume", AudioManager.se_volume)
+	config.set_value("audio", "sound_enabled", AudioManager.sound_enabled)
+	config.set_value("display", "fullscreen", DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN)
+	config.save("user://settings.cfg")
+
+func _load_settings() -> void:
+	"""
+	保存されたオーディオ設定とフルスクリーン設定を読み込みます。
+	"""
+	var config = ConfigFile.new()
+	var err = config.load("user://settings.cfg")
+	if err == OK:
+		AudioManager.set_bgm_volume(config.get_value("audio", "bgm_volume", 1.0))
+		AudioManager.set_se_volume(config.get_value("audio", "se_volume", 1.0))
+		AudioManager.toggle_sound(config.get_value("audio", "sound_enabled", true))
+		var fullscreen = config.get_value("display", "fullscreen", false)
+		_set_fullscreen_mode(fullscreen)
+
+func _check_config_file() -> void:
+	"""
+	設定ファイルが存在するかどうかを確認します。
+	"""
+	if not FileAccess.file_exists("user://settings.cfg"):
+		print("settings.cfg not found, creating new file")
+		_save_settings()
+	var config = ConfigFile.new()
+	var err = config.load("user://settings.cfg")
+	if err == OK:
+		print("BGM Volume: ", config.get_value("audio", "bgm_volume", 1.0))
+		print("SE Volume: ", config.get_value("audio", "se_volume", 1.0))
+		print("Sound Enabled: ", config.get_value("audio", "sound_enabled", true))
+		print("Fullscreen: ", config.get_value("display", "fullscreen", false))
+	else:
+		print("Failed to load settings.cfg")
