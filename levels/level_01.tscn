@@ -27,11 +27,11 @@ position = Vector2(2584, 358)
 initial_velocity = Vector2(50, 0)
 
 [node name="CharacterBody2D2" parent="Objects" index="1" instance=ExtResource("3_shtq5")]
-position = Vector2(2728, 166)
+position = Vector2(2728, 167)
 initial_velocity = Vector2(50, 0)
 
 [node name="CharacterBody2D3" parent="Objects" index="2" instance=ExtResource("3_shtq5")]
-position = Vector2(2392, 54)
+position = Vector2(2392, 55)
 initial_velocity = Vector2(50, 0)
 
 [node name="Items" parent="." index="3"]

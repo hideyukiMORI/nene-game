@@ -21,7 +21,10 @@ func _ready():
 	$Items.hide()
 
 	var tile_set = load("res://assets/tile_set/items.tres")
-	tile_coords["coin_01"] = find_tile_coords_by_name(tile_set, "coin_01")
+	if tile_set:
+		tile_coords["coin_01"] = find_tile_coords_by_name(tile_set, "coin_01")
+	else:
+		print("Error: Failed to load tile set")
 	spawn_items()
 	AudioManager.play_bgm("STAGE_01")
 	

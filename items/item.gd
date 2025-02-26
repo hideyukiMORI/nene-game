@@ -13,7 +13,14 @@ func _ready() -> void:
 	$AnimationPlayer.play('animation')
 
 func initialize(type: String, pos: Vector2) -> void:
-	$Sprite2D.texture = load(textures[type])
+	if type in textures:
+		var texture = load(textures[type])
+		if texture:
+			$Sprite2D.texture = texture
+		else:
+			print("Error: Failed to load texture for type: ", type)
+	else:
+		print("Error: Invalid item type: ", type)
 	position = pos
 
 func _on_Collectible_body_entered(_body: Node) -> void:

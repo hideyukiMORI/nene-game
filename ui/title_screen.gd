@@ -13,5 +13,6 @@ func _input(event: InputEvent) -> void:
 			get_tree().change_scene_to_file(GameState.game_scene)
 
 func _on_start_sound_finished() -> void:
-	# Change the scene after the sound has finished playing
-	get_tree().change_scene_to_file(GameState.game_scene)
+	var result = get_tree().change_scene_to_file(GameState.game_scene)
+	if result != OK:
+		print("Error: Failed to change scene to game scene")

@@ -37,21 +37,24 @@ func reset(pos) -> void:
 	change_state(State.IDLE)
 
 func change_state(new_state: State):
+	print("CHANGE STATE :: ", new_state)
+	print("STATE :: ", state)
 	if state == State.DASH and new_state != State.DASH:
+		# $DashSound.stop()  # Stop the dash sound when leaving RUN state
 		AudioManager.stop_se("DASH")
-		$DashTrail.emitting = false  # DASH状態を離れるときにパーティクルを停止
-
-	state = new_state
+		$DashTrail.emitting = false
+	if state != new_state:
+		state = new_state
 	match state:
 		State.IDLE:
 			new_anim = "idle"
 		State.WALK:
 			new_anim = "walk"
 		State.DASH:
-			new_anim = "run"
+			new_anim = "dash"
 			AudioManager.play_se("DASH", true)
-			$DashTrail.emitting = true  # DASH状態のときにパーティクルを有効にする
-			update_particle_direction()  # パーティクルの方向を更新
+			$DashTrail.emitting = true
+			update_particle_direction()
 		State.CROUCH:
 			new_anim = 'crouch'
 		State.HURT:
@@ -208,6 +211,9 @@ func get_input(delta: float):
 	if state == State.DASH and !dash and (right or left):
 		change_state(State.WALK)
 
+	if state in [State.DASH, State.WALK] and velocity.x == 0:
+		change_state(State.IDLE)
+
 	if state in [State.IDLE, State.WALK, State.DASH] and not is_on_floor():
 		change_state(State.JUMP)
 
@@ -236,15 +242,3 @@ func update_particle_direction():
 		$DashTrail.position.x = -14  # 左を向いているとき
 		# $DashTrail.rotation_degrees = -180
 		$DashTrail.skew = -18.5
-
-
-
-
-
-
-
-
-
-
-
-

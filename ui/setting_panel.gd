@@ -229,11 +229,10 @@ func _toggle_settings_panel_visibility() -> void:
 	_update_menu_selection()
 
 func _on_bgm_slider_value_changed(value: float) -> void:
-	"""
-	BGMボリュームスライダーの変更を処理し、ボリュームラベルを更新します。
-	:param value: BGMスライダーの新しい値。
-	"""
-	AudioManager.set_bgm_volume(value / MAX_VOLUME)
+	if value < MIN_VOLUME or value > MAX_VOLUME:
+		print("Warning: BGM slider value out of range")
+	else:
+		AudioManager.set_bgm_volume(value / MAX_VOLUME)
 	_update_label_bgm_volume()
 	current_selection = 1
 	volume_slider_bgm.release_focus()
@@ -241,11 +240,10 @@ func _on_bgm_slider_value_changed(value: float) -> void:
 	_save_settings()
 
 func _on_se_slider_value_changed(value: float) -> void:
-	"""
-	SEボリュームスライダーの変更を処理し、ボリュームラベルを更新します。
-	:param value: SEスライダーの新しい値。
-	"""
-	AudioManager.set_se_volume(value / MAX_VOLUME)
+	if value < MIN_VOLUME or value > MAX_VOLUME:
+		print("Warning: SE slider value out of range")
+	else:
+		AudioManager.set_se_volume(value / MAX_VOLUME)
 	_update_label_se_volume()
 	current_selection = 2
 	volume_slider_bgm.release_focus()
@@ -363,7 +361,11 @@ func _load_settings() -> void:
 	var err = config.load("user://settings.cfg")
 	if err == OK:
 		print("settings.cfg loaded")
-		AudioManager.set_bgm_volume(config.get_value("audio", "bgm_volume", 1.0))
+		var bgm_volume = config.get_value("audio", "bgm_volume", 1.0)
+		if bgm_volume < 0 or bgm_volume > 1:
+			print("Warning: BGM volume out of range, resetting to default")
+			bgm_volume = 1.0
+		AudioManager.set_bgm_volume(bgm_volume)
 		AudioManager.set_se_volume(config.get_value("audio", "se_volume", 1.0))
 		var sound_enabled = config.get_value("audio", "sound_enabled", true)
 		print("Loaded sound_enabled: ", sound_enabled)
@@ -371,7 +373,7 @@ func _load_settings() -> void:
 		var fullscreen = config.get_value("display", "fullscreen", false)
 		_set_fullscreen_mode(fullscreen)
 	else:
-		print("Failed to load settings.cfg")
+		print("Error: Failed to load settings.cfg")
 
 func _check_config_file() -> void:
 	"""

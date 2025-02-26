@@ -9,9 +9,13 @@ extends Node
 
 func restart() -> void:
 	current_level = 1
-	get_tree().change_scene_to_file(title_screen)
+	var result = get_tree().change_scene_to_file(title_screen)
+	if result != OK:
+		print("Error: Failed to change scene to title screen")
 
 func next_level() -> void:
 	current_level += 1
 	if current_level <= num_levels:
-		get_tree().reload_current_scene()
+		var result = get_tree().reload_current_scene()
+		if result != OK:
+			print("Error: Failed to reload current scene")
