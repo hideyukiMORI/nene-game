@@ -1,0 +1,126 @@
+[gd_scene load_steps=12 format=3 uid="uid://c6pdb3hnn7x4n"]
+
+[ext_resource type="Script" path="res://enemies/010_cat_sith.gd" id="1_yftg6"]
+[ext_resource type="Texture2D" uid="uid://bthwl5o4dd1k1" path="res://assets/sprites/010-cat-sith.png" id="2_j4ait"]
+[ext_resource type="AudioStream" uid="uid://d3chk5mdup5bw" path="res://assets/audio/se/puchi.mp3" id="3_asmv3"]
+[ext_resource type="PackedScene" uid="uid://v8p13o0agusf" path="res://dialogue/scenes/ui/talk_prompt.tscn" id="4_2xrgv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_urccb"]
+size = Vector2(32, 84)
+
+[sub_resource type="Animation" id="Animation_cur1e"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+
+[sub_resource type="Animation" id="Animation_ac17f"]
+resource_name = "death"
+length = 0.8
+step = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 3]
+}
+
+[sub_resource type="Animation" id="Animation_h4uvn"]
+resource_name = "idle"
+length = 4.0
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 3.8, 3.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [2, 1, 0, 1, 2]
+}
+
+[sub_resource type="Animation" id="Animation_g4fko"]
+resource_name = "walk"
+length = 0.5
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ibl2o"]
+_data = {
+"RESET": SubResource("Animation_cur1e"),
+"death": SubResource("Animation_ac17f"),
+"idle": SubResource("Animation_h4uvn"),
+"walk": SubResource("Animation_g4fko")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6kbps"]
+size = Vector2(80, 96.5)
+
+[node name="Cat" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 8
+collision_mask = 11
+script = ExtResource("1_yftg6")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_j4ait")
+hframes = 3
+frame = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(0, 6)
+shape = SubResource("RectangleShape2D_urccb")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ibl2o")
+}
+autoplay = "idle"
+
+[node name="HitSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_asmv3")
+
+[node name="TalkPrompt" parent="." instance=ExtResource("4_2xrgv")]
+light_mask = 16
+visibility_layer = 16
+position = Vector2(0, -64)
+
+[node name="InteractionArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("RectangleShape2D_6kbps")
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="body_entered" from="InteractionArea" to="." method="_on_interaction_area_body_entered"]
+[connection signal="body_exited" from="InteractionArea" to="." method="_on_interaction_area_body_exited"]

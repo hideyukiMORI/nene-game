@@ -1,0 +1,78 @@
+[gd_scene load_steps=7 format=3 uid="uid://v8p13o0agusf"]
+
+[ext_resource type="Script" path="res://dialogue/scenes/ui/talk_prompt.gd" id="1_ceiq6"]
+[ext_resource type="Theme" uid="uid://cf5p1g5ho3kg7" path="res://assets/theme/nene_theme.tres" id="1_r20jw"]
+[ext_resource type="Texture2D" uid="uid://dnd03q83mlk30" path="res://dialogue/resources/images/ui/talk_prompt.png" id="1_x2pse"]
+
+[sub_resource type="Animation" id="Animation_8njey"]
+resource_name = "idle"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control:position:y")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.233333, -4.86772, -8, -0.25, 0, 0.25, 0, 0, -0.266667, -5.0245, 0.25, 0),
+"times": PackedFloat32Array(0, 1, 2)
+}
+
+[sub_resource type="Animation" id="Animation_fi2sy"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control:position:y")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_53rop"]
+_data = {
+"RESET": SubResource("Animation_fi2sy"),
+"idle": SubResource("Animation_8njey")
+}
+
+[node name="TalkPrompt" type="Node2D"]
+light_mask = 32
+visibility_layer = 32
+script = ExtResource("1_ceiq6")
+
+[node name="Control" type="Control" parent="."]
+light_mask = 32
+visibility_layer = 32
+layout_mode = 3
+anchors_preset = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="Control"]
+light_mask = 32
+visibility_layer = 32
+texture = ExtResource("1_x2pse")
+
+[node name="Label" type="Label" parent="Control"]
+light_mask = 32
+visibility_layer = 32
+texture_filter = 1
+layout_mode = 0
+offset_left = -12.1
+offset_top = -17.0
+offset_right = 28.9
+offset_bottom = 7.0
+scale = Vector2(0.91, 0.91)
+theme = ExtResource("1_r20jw")
+theme_override_font_sizes/font_size = 20
+text = "Talk"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_53rop")
+}
+autoplay = "idle"
+playback_auto_capture = false

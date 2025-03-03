@@ -53,16 +53,9 @@ tile_set = ExtResource("5_xerwc")
 [node name="Enemies" type="Node" parent="."]
 process_mode = 1
 
-[node name="Player" parent="." instance=ExtResource("3_hhvqy")]
+[node name="Player" parent="." groups=["player"] instance=ExtResource("3_hhvqy")]
 process_mode = 1
 z_index = 1
-dash_speed = 350
-jump_speed = -500
-gravity = 1000
-climb_speed = 50
-acceleration = 800
-air_acceleration = 5500
-max_jumps = 2
 
 [node name="Front" type="TileMapLayer" parent="."]
 process_mode = 1

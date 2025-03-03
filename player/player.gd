@@ -37,8 +37,6 @@ func reset(pos) -> void:
 	change_state(State.IDLE)
 
 func change_state(new_state: State):
-	print("CHANGE STATE :: ", new_state)
-	print("STATE :: ", state)
 	if state == State.DASH and new_state != State.DASH:
 		# $DashSound.stop()  # Stop the dash sound when leaving RUN state
 		AudioManager.stop_se("DASH")
