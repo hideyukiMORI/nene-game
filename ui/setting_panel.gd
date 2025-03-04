@@ -166,6 +166,8 @@ func _input(event: InputEvent) -> void:
 	設定パネルのトグルと、パネルが表示されているときの入力を処理します。
 	:param event: 処理する入力イベント。
 	"""
+	if DialogueManager.is_dialogue_open:
+		return
 	if event.is_action_pressed("select") and !is_paused:
 		_toggle_settings_panel_visibility()
 	elif settings_panel.visible:

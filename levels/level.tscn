@@ -53,7 +53,7 @@ tile_set = ExtResource("5_xerwc")
 [node name="Enemies" type="Node" parent="."]
 process_mode = 1
 
-[node name="Player" parent="." groups=["player"] instance=ExtResource("3_hhvqy")]
+[node name="Player" parent="." instance=ExtResource("3_hhvqy")]
 process_mode = 1
 z_index = 1
 

@@ -87,8 +87,8 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6kbps"]
 size = Vector2(80, 96.5)
 
-[node name="Cat" type="CharacterBody2D" groups=["enemies"]]
-collision_layer = 8
+[node name="Cat" type="CharacterBody2D" groups=["enemies", "interactable"]]
+collision_layer = 16
 collision_mask = 11
 script = ExtResource("1_yftg6")
 
@@ -117,6 +117,7 @@ visibility_layer = 16
 position = Vector2(0, -64)
 
 [node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
 shape = SubResource("RectangleShape2D_6kbps")

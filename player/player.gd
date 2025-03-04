@@ -21,11 +21,10 @@ var is_on_ladder: bool = false
 var coyote_time: bool = false
 
 func _ready() -> void:
-	# $Camera2D.make_current()
 	change_state(State.IDLE)
 	position.x = 550
 	position.y = 200
-	$CoyoteTimer.wait_time = 0.2  # Adjust this value as needed
+	$CoyoteTimer.wait_time = 0.2
 	$CoyoteTimer.connect("timeout", Callable(self, "_on_CoyoteTimer_timeout"))
 
 func reset(pos) -> void:
@@ -217,6 +216,9 @@ func get_input(delta: float):
 
 	# if Input.is_action_pressed("select"):
 	# 	get_tree().quit()
+
+
+
 
 func hurt() -> void:
 	# if state != State.HURT:

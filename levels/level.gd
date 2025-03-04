@@ -4,7 +4,7 @@ extends Node2D
 
 signal score_changed(value: int)
 
-var score = 0 : set = set_score
+var score = 0: set = set_score
 var cell_size = Vector2(16, 16)
 var tile_coords = {}
 var is_paused = false
@@ -43,7 +43,7 @@ func set_camera_limits() -> void:
 func _process(_delta: float) -> void:
 	var player_position = $Player.global_position
 	var camera = $Camera2D
-	var camera_margin = Vector2(50, 50)  # カメラが追随を開始するマージン
+	var camera_margin = Vector2(50, 50) # カメラが追随を開始するマージン
 	var camera_position = camera.global_position
 
 	if abs(player_position.x - camera_position.x) > camera_margin.x:
@@ -103,7 +103,6 @@ func _on_ladders_body_exited(body):
 	body.is_on_ladder = false
 
 
-
 func find_tile_coords_by_name(tile_set: TileSet, target_name: String) -> Vector2i:
 	if not tile_set:
 		print("Warning: Invalid tileset")
@@ -124,7 +123,7 @@ func find_tile_coords_by_name(tile_set: TileSet, target_name: String) -> Vector2
 	return Vector2i(-1, -1)
 
 func _input(event: InputEvent) -> void:
-	if not settings_panel.visible and event.is_action_pressed("pause"):
+	if not settings_panel.visible and event.is_action_pressed("pause") and not DialogueManager.is_dialogue_open:
 		get_tree().paused = not get_tree().paused
 		is_paused = get_tree().paused
 		$CanvasLayer/SettingPanel.is_paused = is_paused

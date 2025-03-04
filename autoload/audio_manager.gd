@@ -24,7 +24,8 @@ var se_paths = {
 	"HIGH_JUMP": "res://assets/audio/se/jump_01.wav",
 	"DASH": "res://assets/audio/se/dash_01.wav",
 	"COIN": "res://assets/audio/se/coin_01.wav",
-	"PUCHI": "res://assets/audio/se/puchi.mp3"
+	"PUCHI": "res://assets/audio/se/puchi.mp3",
+	"PI01": "res://assets/audio/se/pi_01.mp3"
 }
 
 func _ready() -> void:
@@ -149,8 +150,9 @@ func pause_all() -> void:
 	pause_se()
 
 func resume_all() -> void:
-	resume_bgm()
-	resume_se()
+	if sound_enabled:
+		resume_bgm()
+		resume_se()
 
 func stop_all() -> void:
 	stop_bgm()

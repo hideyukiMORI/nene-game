@@ -18,8 +18,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-GameState="*res://main/GameState.gd"
-AudioManager="*res://audio/audio_manager.gd"
+AudioManager="*res://autoload/audio_manager.gd"
+GameState="*res://autoload/game_state.gd"
+DialogueManager="*res://autoload/dialogue_manager.gd"
 
 [display]
 

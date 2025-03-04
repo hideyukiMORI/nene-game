@@ -1,0 +1,55 @@
+[gd_scene load_steps=4 format=3 uid="uid://che64tfv34aq6"]
+
+[ext_resource type="Texture2D" uid="uid://dmq310f36mloa" path="res://dialogue/resources/images/ui/dialogue_nine_patch_rect_alpha.png" id="1_b8sw0"]
+[ext_resource type="Theme" uid="uid://cf5p1g5ho3kg7" path="res://assets/theme/nene_theme.tres" id="1_hjqqx"]
+[ext_resource type="Script" path="res://ui/dialogue_box.gd" id="1_qmhxs"]
+
+[node name="DialogueBox" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qmhxs")
+
+[node name="Mask" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.533333)
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_right = -40.0
+offset_bottom = -40.0
+theme = ExtResource("1_hjqqx")
+texture = ExtResource("1_b8sw0")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="RichTextLabel" type="RichTextLabel" parent="NinePatchRect"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 25.0
+offset_right = -24.0
+offset_bottom = -23.0
+theme_override_font_sizes/normal_font_size = 40
+bbcode_enabled = true
+text = "NeNe:
+Nya-!!!"
+scroll_following = true

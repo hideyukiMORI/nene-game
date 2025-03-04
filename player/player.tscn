@@ -178,8 +178,8 @@ scale_over_velocity_min = 1.0
 scale_over_velocity_max = 1.0
 color_ramp = SubResource("GradientTexture1D_r0vyi")
 
-[node name="Player" type="CharacterBody2D"]
-collision_mask = 7
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_mask = 22
 script = ExtResource("1_jkgy0")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
