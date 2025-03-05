@@ -1,0 +1,64 @@
+{
+  "first_meet": {
+    "initial_state": {
+      "background": "forest_evening",
+      "bgm": "mysterious_encounter",
+      "characters": {
+        "Cat Sith": {
+          "name_color": "#FF9ECD",
+          "text_color": "#FFFFFF",
+          "portrait_base_path": "res://assets/characters/cat_sith/",
+          "portraits": {
+            "normal": "normal.png",
+            "smile": "smile.png",
+            "angry": "angry.png"
+          }
+        },
+        "Nene": {
+          "name_color": "#7DFFB2",
+          "text_color": "#FFFFFF",
+          "portrait_base_path": "res://assets/characters/nene/",
+          "portraits": {
+            "normal": "normal.png",
+            "surprised": "surprised.png",
+            "happy": "happy.png"
+          }
+        }
+      },
+      "portraits": [
+        {
+          "character": "Cat Sith",
+          "portrait": "normal",
+          "position": "right"
+        },
+        {
+          "character": "Nene",
+          "portrait": "normal",
+          "position": "left"
+        }
+      ]
+    },
+    "pages": [
+      {
+        "speaker": "Cat Sith",
+        "text": "[i]Well well... What do we have here?\nA little witch in my territory?[/i]",
+        "portrait": "normal"
+      },
+      {
+        "speaker": "Nene",
+        "text": "[shake rate=5 level=5]Eek![/shake] A... a talking cat!?",
+        "portrait": "normal"
+      },
+      {
+        "speaker": "Cat Sith",
+        "text": "[rainbow freq=0.5]Not just any cat, dearie...[/rainbow]\n[wave amp=30 freq=3]I am a Cat Sith, a magical feline![/wave]",
+        "portrait": "normal"
+      },
+      {
+        "speaker": "Nene",
+        "text": "[b]Oh![/b] I've read about you in my spellbooks!",
+        "portrait": "normal"
+      }
+    ]
+  }
+}
