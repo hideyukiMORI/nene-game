@@ -9,6 +9,7 @@ var canvas_layer: CanvasLayer = null  # UIレイヤーを追加
 
 var current_pages: Array = []  # 現在の会話ページ配列
 var current_page_index: int = 0  # 現在のページインデックス
+var current_characters: Dictionary = {}  # キャラクター情報を保持
 
 func _ready():
 	# 初期化処理
@@ -21,10 +22,8 @@ func start_dialogue(target: String, dialogue_id: String, page_id: String) -> voi
 	if is_dialogue_open:
 		return
 	
-	# JSONファイルのパスを生成
 	var file_path = "res://dialogue/resources/data/%s/en/%s.json" % [target, dialogue_id]
 	
-	# JSONファイルを読み込む
 	var json = JSON.new()
 	var file = FileAccess.open(file_path, FileAccess.READ)
 	if not file:
@@ -38,6 +37,7 @@ func start_dialogue(target: String, dialogue_id: String, page_id: String) -> voi
 		return
 		
 	var data = json.get_data()
+	current_characters = data[page_id]["initial_state"]["characters"]  # キャラクター情報を保存
 	current_pages = data[page_id]["pages"]
 	current_page_index = 0
 	
@@ -50,14 +50,26 @@ func show_current_page() -> void:
 		current_dialogue = dialogue_scene.instantiate()
 		canvas_layer.add_child(current_dialogue)
 	
-	current_dialogue.show_message(current_pages[current_page_index]["text"])
+	var page = current_pages[current_page_index]
+	var speaker = page["speaker"]
+	var speaker_color = current_characters[speaker]["name_color"]
+	var text_color = current_characters[speaker]["text_color"]
+	
+	# スピード設定を取得（ページごとの設定があれば上書き）
+	var text_speed = current_characters[speaker]["text_speed"]
+	if "text_speed" in page:
+		text_speed = page["text_speed"]
+	
+	current_dialogue.show_message(speaker, speaker_color, page["text"], text_color, text_speed)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("jump") and is_dialogue_open:
-		if current_page_index < current_pages.size() - 1:
+		if not current_dialogue.is_text_completed:
+			current_dialogue.skip_text()
+		elif current_dialogue.is_text_completed and current_page_index < current_pages.size() - 1:
 			current_page_index += 1
 			show_current_page()
-		else:
+		elif current_dialogue.is_text_completed:
 			close_dialogue()
 	elif event.is_action_pressed("select") and is_dialogue_open:
 		close_dialogue()

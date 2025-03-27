@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://che64tfv34aq6"]
+[gd_scene load_steps=7 format=3 uid="uid://che64tfv34aq6"]
 
 [ext_resource type="Texture2D" uid="uid://dmq310f36mloa" path="res://dialogue/resources/images/ui/dialogue_nine_patch_rect_alpha.png" id="1_b8sw0"]
 [ext_resource type="Theme" uid="uid://cf5p1g5ho3kg7" path="res://assets/theme/nene_theme.tres" id="1_hjqqx"]
 [ext_resource type="Script" path="res://ui/dialogue_box.gd" id="1_qmhxs"]
+[ext_resource type="PackedScene" uid="uid://5u5nf8fkisi3" path="res://dialogue/scenes/characters/cat_sith.tscn" id="2_vews7"]
+[ext_resource type="PackedScene" uid="uid://c7favuer4rfbt" path="res://dialogue/scenes/ui/arrow_next_page.tscn" id="4_n6cym"]
+[ext_resource type="PackedScene" uid="uid://dm6myfi5sv5b1" path="res://dialogue/scenes/characters/nene.tscn" id="6_myogb"]
 
 [node name="DialogueBox" type="Control"]
 layout_mode = 3
@@ -21,6 +24,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.533333)
+
+[node name="CatSith" parent="." instance=ExtResource("2_vews7")]
+offset_left = 903.0
+offset_top = 177.0
+offset_right = 943.0
+offset_bottom = 217.0
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
 layout_mode = 1
@@ -53,3 +62,23 @@ bbcode_enabled = true
 text = "NeNe:
 Nya-!!!"
 scroll_following = true
+
+[node name="ArrowNextPage" parent="NinePatchRect" instance=ExtResource("4_n6cym")]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -48.0
+offset_top = -58.0
+offset_right = -48.0
+offset_bottom = -58.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="CatSith2" parent="." instance=ExtResource("6_myogb")]
+offset_left = 214.0
+offset_top = 177.0
+offset_right = 254.0
+offset_bottom = 217.0

@@ -1,10 +1,12 @@
 extends Control
 
 @onready var message_text: RichTextLabel = $NinePatchRect/RichTextLabel
+@onready var arrow_next_page = $NinePatchRect/ArrowNextPage
 
-var text_speed: float = 0.05  # 1文字の表示時間（秒）
-var is_text_completed: bool = false
+var is_text_completed: bool = true
 var scroll_speed: int = 10  # スクロール速度
+var current_tween: Tween = null  # 現在実行中のtweenを保持
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -16,7 +18,7 @@ func _ready() -> void:
 	v_scroll_bar.modulate = Color("ffffff")  # スクロールバー全体
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not is_text_completed:
 		return
 		
@@ -47,42 +49,63 @@ func _input(event: InputEvent) -> void:
 			var v_scroll_bar = message_text.get_v_scroll_bar()
 			v_scroll_bar.value += scroll  # 直接スクロールバーの値を変更
 
-func show_message(text: String) -> void:
-	message_text.scroll_to_line(0)
-	message_text.text = text
-	message_text.visible_characters = 0
+func show_message(speaker: String, speaker_color: String, text: String, text_color: String, text_speed: float) -> void:
+	if !is_text_completed:
+		return
 	is_text_completed = false
+	arrow_next_page.visible = false
+	message_text.scroll_to_line(0)
+	
+	# 話者名と本文を色付きで結合
+	var formatted_text = "[color=%s]%s[/color]:\n[color=%s]%s[/color]" % [
+		speaker_color,
+		speaker,
+		text_color,
+		text
+	]
+	
+	message_text.text = formatted_text
+	message_text.visible_characters = 0
 	
 	var plain_text = message_text.get_parsed_text()
-	var newline_pause: float = 0.3  # 改行時の待ち時間（秒）
-	var space_pause: float = 0.03  # スペース時の待ち時間（秒）
+	var newline_pause: float = 0.3
+	var space_pause: float = 0.03
 	
-	var tween = create_tween()
+	# 既存のtweenがあれば停止
+	if current_tween:
+		current_tween.kill()
+	
+	current_tween = create_tween()
 	for i in range(plain_text.length()):
 		var current_char = plain_text[i]
 		
-		# 文字を表示
-		tween.tween_property(
+		current_tween.tween_property(
 			message_text,
 			"visible_characters",
 			i + 1,
 			text_speed
 		).set_trans(Tween.TRANS_LINEAR)
 		
-		# 改行の場合は追加の待ち時間
 		if current_char == "\n":
-			tween.tween_interval(newline_pause)
-		# スペースの場合は追加の待ち時間
+			current_tween.tween_interval(newline_pause)
 		elif current_char == " ":
-			tween.tween_interval(space_pause)
-		# 通常の文字の場合は音を鳴らす
+			current_tween.tween_interval(space_pause)
 		elif current_char != " " and current_char != "　":
-			tween.tween_callback(func(): AudioManager.play_se("PI01"))
+			current_tween.tween_callback(func(): AudioManager.play_se("PI01"))
 	
-	tween.finished.connect(func(): is_text_completed = true)
+	current_tween.finished.connect(func(): _on_tween_finished())
 
-# 文字送りをスキップする機能
 func skip_text() -> void:
 	if not is_text_completed:
+		# 実行中のtweenを停止
+		if current_tween:
+			current_tween.kill()
+			current_tween = null
+		
 		message_text.visible_characters = -1  # 全文字表示
 		is_text_completed = true
+		_on_tween_finished()  # 矢印表示も更新
+
+func _on_tween_finished() -> void:
+	arrow_next_page.visible = true
+	is_text_completed = true

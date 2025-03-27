@@ -1,0 +1,136 @@
+[gd_scene load_steps=14 format=3 uid="uid://co4qnqmvx1qkc"]
+
+[ext_resource type="Script" path="res://objects/warp_point.gd" id="1_hscia"]
+[ext_resource type="Shader" path="res://shaders/gradient_bg.gdshader" id="1_k2ops"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ii2u4"]
+size = Vector2(20, 60)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_le7yp"]
+shader = ExtResource("1_k2ops")
+shader_parameter/color_top = Color(0, 1, 1, 0)
+shader_parameter/color_bottom = Color(0, 1, 1, 0.0823529)
+
+[sub_resource type="Gradient" id="Gradient_qpq78"]
+offsets = PackedFloat32Array(0, 0.286837, 1)
+colors = PackedColorArray(0, 0.392157, 1, 1, 0, 0.564706, 1, 1, 0, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1x2cq"]
+gradient = SubResource("Gradient_qpq78")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ibi6f"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(3, 1, 1)
+direction = Vector3(0, -1, 0)
+spread = 0.0
+initial_velocity_min = 40.0
+initial_velocity_max = 60.0
+gravity = Vector3(0, 0, 0)
+color_ramp = SubResource("GradientTexture1D_1x2cq")
+
+[sub_resource type="Gradient" id="Gradient_kqs66"]
+colors = PackedColorArray(0, 1, 1, 1, 0, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_hwyed"]
+gradient = SubResource("Gradient_kqs66")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_y17wn"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(10, 1, 1)
+direction = Vector3(0, -1, 0)
+spread = 0.0
+initial_velocity_min = 40.0
+initial_velocity_max = 60.0
+gravity = Vector3(0, 0, 0)
+scale_max = 2.0
+color_ramp = SubResource("GradientTexture1D_hwyed")
+
+[sub_resource type="Gradient" id="Gradient_sw24y"]
+offsets = PackedFloat32Array(0, 0.465619, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.866667, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_n4win"]
+gradient = SubResource("Gradient_sw24y")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_mvnrh"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(20, 1, 1)
+direction = Vector3(0, -1, 0)
+spread = 0.0
+initial_velocity_min = 40.0
+initial_velocity_max = 60.0
+gravity = Vector3(0, 0, 0)
+scale_max = 3.0
+color_ramp = SubResource("GradientTexture1D_n4win")
+
+[node name="WarpPoint" type="Area2D"]
+script = ExtResource("1_hscia")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -30)
+shape = SubResource("RectangleShape2D_ii2u4")
+
+[node name="ColorRect3" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_le7yp")
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -7.0
+offset_top = -128.0
+offset_right = 7.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+z_index = 2
+material = SubResource("ShaderMaterial_le7yp")
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -12.0
+offset_top = -100.0
+offset_right = 12.0
+grow_horizontal = 2
+grow_vertical = 0
+metadata/_edit_lock_ = true
+
+[node name="GPUParticles2D-BACK" type="GPUParticles2D" parent="."]
+amount = 70
+amount_ratio = 0.6
+process_material = SubResource("ParticleProcessMaterial_ibi6f")
+lifetime = 2.5
+
+[node name="GPUParticles2D-MIDDLE" type="GPUParticles2D" parent="."]
+amount = 30
+amount_ratio = 0.3
+process_material = SubResource("ParticleProcessMaterial_y17wn")
+lifetime = 2.0
+
+[node name="GPUParticles2D-FRONT" type="GPUParticles2D" parent="."]
+z_index = 2
+amount = 10
+amount_ratio = 0.5
+process_material = SubResource("ParticleProcessMaterial_mvnrh")
+lifetime = 2.0
+
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = 2
+material = SubResource("ShaderMaterial_le7yp")
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -80.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0

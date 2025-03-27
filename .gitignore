@@ -5,3 +5,17 @@
 /assets/
 
 *.import
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.ico
+*.webp
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.m4a
+*.m4b

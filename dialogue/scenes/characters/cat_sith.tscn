@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://5u5nf8fkisi3"]
+
+[ext_resource type="Texture2D" uid="uid://cft7kkuns2m6o" path="res://dialogue/resources/images/portraits/cat_sith/idle.png" id="1_6726w"]
+
+[node name="CatSith" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(3, 3)
+texture = ExtResource("1_6726w")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Sprite2D")
