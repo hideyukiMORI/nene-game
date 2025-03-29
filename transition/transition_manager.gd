@@ -7,13 +7,15 @@ signal transition_finished
 
 func _ready() -> void:
 	transition_rect.visible = false
+	transition_rect.color = Color.WHITE  # デフォルトは白色
 
-# 同一シーン内ワープ用のトランジション
-func do_same_scene_transition(callback: Callable) -> void:
+# フェードトランジション（白フェード）
+func do_fade_transition(callback: Callable) -> void:
 	# トランジション開始時にポーズ
 	get_tree().paused = true
 	
 	transition_rect.visible = true
+	transition_rect.color = Color.WHITE  # 明示的に白色に設定
 	AudioManager.play_se("WARP")
 	animation_player.play("fade_out")
 	await animation_player.animation_finished
@@ -26,6 +28,30 @@ func do_same_scene_transition(callback: Callable) -> void:
 	animation_player.play("fade_in")
 	await animation_player.animation_finished
 	transition_rect.visible = false
+	
+	# トランジション終了時にポーズ解除
+	get_tree().paused = false
+
+# フェードトランジション（黒フェード）
+func do_fade_black_transition(callback: Callable) -> void:
+	# トランジション開始時にポーズ
+	get_tree().paused = true
+	
+	transition_rect.visible = true
+	transition_rect.color = Color.BLACK  # 明示的に黒色に設定
+	AudioManager.play_se("WARP")
+	animation_player.play("fade_out")
+	await animation_player.animation_finished
+	
+	# コールバックで実際のワープ処理を実行
+	callback.call()
+	
+	await get_tree().create_timer(0.1).timeout
+	# AudioManager.play_se("WARP_END")
+	animation_player.play("fade_in")
+	await animation_player.animation_finished
+	transition_rect.visible = false
+	transition_rect.color = Color.WHITE  # 白色に戻す
 	
 	# トランジション終了時にポーズ解除
 	get_tree().paused = false

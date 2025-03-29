@@ -67,10 +67,12 @@ target_marker = NodePath("../../SpawnPoints/Marker2D2")
 
 [node name="WarpPoint4" parent="WarpPoint" index="2" node_paths=PackedStringArray("target_marker") instance=ExtResource("16_hcm2r")]
 position = Vector2(1392, 304)
+transition_type = 1
 target_marker = NodePath("../../SpawnPoints/PlayerSpawn")
 
 [node name="WarpPoint5" parent="WarpPoint" index="3" node_paths=PackedStringArray("target_marker") instance=ExtResource("16_hcm2r")]
 position = Vector2(1392, -128)
+transition_type = 0
 target_marker = NodePath("../../SpawnPoints/Marker2D3")
 
 [node name="Enemy" parent="Enemies" index="0" instance=ExtResource("4_nn2op")]

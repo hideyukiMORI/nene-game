@@ -5,9 +5,16 @@ enum WarpType {
 	OTHER_SCENE    # 別シーンへの移動
 }
 
+enum TransitionType {
+	FADE_WHITE,    # 白フェード
+	FADE_BLACK,     # 黒フェード
+	CIRCLE_WIPE   # サークルワイプ
+}
+
 # ワープの基本設定
 @export var warp_type: WarpType
 @export var is_enabled: bool = true
+@export var transition_type: TransitionType = TransitionType.CIRCLE_WIPE  # デフォルトはサークルワイプ
 
 # 同一シーン内ワープ用の設定
 @export var target_marker: Marker2D
@@ -51,8 +58,14 @@ func _warp_same_scene(body: Node2D) -> void:
 	var warp_callback = func():
 		body.global_position = target_marker.global_position
 	
-	# プレイヤーの位置を中心にトランジションを実行
-	await TransitionManager.do_circle_wipe_transition(warp_callback, body.global_position, target_marker)
+	# トランジションタイプに応じて適切なトランジションを実行
+	match transition_type:
+		TransitionType.FADE_WHITE:
+			await TransitionManager.do_fade_transition(warp_callback)
+		TransitionType.CIRCLE_WIPE:
+			await TransitionManager.do_circle_wipe_transition(warp_callback, body.global_position, target_marker)
+		TransitionType.FADE_BLACK:
+			await TransitionManager.do_fade_black_transition(warp_callback)
 
 func _warp_other_scene() -> void:
 	if target_scene_name.is_empty():
