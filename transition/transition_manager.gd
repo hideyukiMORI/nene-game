@@ -177,7 +177,7 @@ func do_circle_wipe_transition(callback: Callable, center_pos: Vector2, target_m
 	print("Target marker position: ", target_marker.global_position)
 	
 	# 新しいキャラクターの位置を取得して更新
-	var new_center_pos = target_marker.global_position  # ここを変更
+	var new_center_pos = target_marker.global_position
 	print("\nNew Position Details:")
 	print("New center position: ", new_center_pos)
 	
@@ -212,7 +212,7 @@ func do_circle_wipe_transition(callback: Callable, center_pos: Vector2, target_m
 		print("Size: ", viewport_rect.size)
 		print("End: ", viewport_rect.end)
 
-	# 以前の計算を行うが、結果は使わない（デバッグ情報として残す）
+	# 新しいビューポートの中心を計算
 	var new_viewport_center = viewport_rect.position + viewport_rect.size / 2.0
 	
 	# キャラクターの位置を制限範囲内に収める
@@ -221,6 +221,7 @@ func do_circle_wipe_transition(callback: Callable, center_pos: Vector2, target_m
 		clamp(new_center_pos.y, camera_limits.top, camera_limits.bottom)
 	)
 	
+	# 画面座標の計算
 	var new_relative_pos = clamped_new_center_pos - new_viewport_center
 	var new_screen_pos = Vector2(
 		new_relative_pos.x * camera_zoom.x,
@@ -232,11 +233,10 @@ func do_circle_wipe_transition(callback: Callable, center_pos: Vector2, target_m
 	print("New center - viewport center: ", new_relative_pos)
 	print("After camera zoom: ", new_screen_pos)
 
-	# スクリーン座標をより安全なUV座標に変換する方法
-	# 画面の中心（0, 0）からの相対位置を考慮し、0.5を中心とした範囲に収める
-	var max_distance = min(viewport_size.x, viewport_size.y) * 0.4 # 画面の40%を最大距離とする
+	# 画面の中心からの最大距離を計算（画面の40%）
+	var max_distance = min(viewport_size.x, viewport_size.y) * 0.4
 	
-	# 画面中心からの距離に基づいて、0.5を中心とした範囲で正規化
+	# UV座標の計算（0.5を中心とした範囲で正規化）
 	var new_normalized_x = clamp(0.5 + (new_screen_pos.x / max_distance) * 0.4, 0.1, 0.9)
 	var new_normalized_y = clamp(0.5 + (new_screen_pos.y / max_distance) * 0.4, 0.1, 0.9)
 
@@ -247,14 +247,14 @@ func do_circle_wipe_transition(callback: Callable, center_pos: Vector2, target_m
 	print("Normalized X: ", new_normalized_x)
 	print("Normalized Y: ", new_normalized_y)
 
-	# UV座標を0.1-0.9の範囲に制限（画面端での問題を防ぐ）
+	# UV座標を0.1-0.9の範囲に制限
 	var new_center_uv = Vector2(new_normalized_x, new_normalized_y)
 	
-	# カメラが制限範囲に達したかどうかを判定し、必要に応じて中心位置を調整
+	# カメラの制限と移動量に基づいて中心位置を調整
 	var adjusted_center_uv = start_center_uv
 	
 	if camera:
-		# カメラが制限範囲に達したかどうかをチェック
+		# カメラの制限チェック
 		var camera_at_limit = false
 		var camera_limit_direction = Vector2.ZERO
 		
@@ -278,42 +278,35 @@ func do_circle_wipe_transition(callback: Callable, center_pos: Vector2, target_m
 		print("Camera at limit: ", camera_at_limit)
 		print("Limit direction: ", camera_limit_direction)
 		
-		# カメラの移動量を計算（常に計算）
+		# カメラの移動量チェック
 		var camera_movement = camera.global_position - start_camera_pos
 		var significant_movement = abs(camera_movement.x) > 100 or abs(camera_movement.y) > 100
 		print("Camera movement: ", camera_movement)
 		print("Significant movement: ", significant_movement)
 		
-		# 調整が必要かどうかを判断（カメラが制限に達している、または大きく移動した）
+		# 調整が必要かどうかを判断
 		var needs_adjustment = camera_at_limit or significant_movement
 		
 		if needs_adjustment:
-			# 中心位置の調整量を計算
 			var adjustment = Vector2.ZERO
 			
 			# カメラが制限に達している場合の調整
 			if camera_at_limit:
 				if camera_limit_direction.x != 0:
-					# X方向の調整（より強く）
-					adjustment.x = camera_limit_direction.x * 0.35  # 最大で±0.35の調整
+					adjustment.x = camera_limit_direction.x * 0.35
 				if camera_limit_direction.y != 0:
-					# Y方向の調整（より強く）
-					adjustment.y = camera_limit_direction.y * 0.35  # 最大で±0.35の調整
+					adjustment.y = camera_limit_direction.y * 0.35
 			
 			# カメラが大きく移動した場合の調整
 			if significant_movement and not camera_at_limit:
-				# ワープ先がどの方向にあるかを計算
 				var movement_direction = Vector2(
 					sign(camera_movement.x),
 					sign(camera_movement.y)
 				)
-				
-				# カメラの移動方向に応じて調整
-				adjustment = movement_direction * 0.25  # 移動方向に25%シフト
+				adjustment = movement_direction * 0.25
 			
-			# ワープ先が画面端に近い場合、新しいUV位置も考慮
+			# ワープ先が画面端に近い場合の調整
 			if new_center_uv.x < 0.2 or new_center_uv.x > 0.8 or new_center_uv.y < 0.2 or new_center_uv.y > 0.8:
-				# 新しいUV位置を調整に加味（50%のウェイトで）
 				adjustment = adjustment * 0.5 + (new_center_uv - Vector2(0.5, 0.5)) * 0.5
 			
 			# 調整された中心位置を計算
@@ -335,7 +328,7 @@ func do_circle_wipe_transition(callback: Callable, center_pos: Vector2, target_m
 	print("\nNew Final UV Coordinates:")
 	print("Center UV: ", adjusted_center_uv)
 
-	# シェーダーの中心位置を更新（カメラの制限範囲を考慮して調整）
+	# シェーダーの中心位置を更新
 	shader_material.set_shader_parameter("center", adjusted_center_uv)
 
 	# 1フレーム待って位置の更新を確実にする
