@@ -50,6 +50,13 @@ tile_set = ExtResource("5_xerwc")
 
 [node name="Danger" type="TileMapLayer" parent="."]
 
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="PlayerSpawn" type="Marker2D" parent="SpawnPoints"]
+process_mode = 1
+
+[node name="WarpPoint" type="Node2D" parent="."]
+
 [node name="Enemies" type="Node" parent="."]
 process_mode = 1
 
@@ -60,9 +67,6 @@ z_index = 1
 [node name="Front" type="TileMapLayer" parent="."]
 process_mode = 1
 z_index = 1
-
-[node name="PlayerSpawn" type="Marker2D" parent="."]
-process_mode = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

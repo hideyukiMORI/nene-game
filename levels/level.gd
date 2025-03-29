@@ -17,7 +17,7 @@ func _ready():
 	$Camera2D.make_current()
 	set_camera_limits()
 	$Player.dead.connect(self._on_player_dead)
-	$Player.reset($PlayerSpawn.position)
+	$Player.reset($SpawnPoints/PlayerSpawn.position)
 	$Items.hide()
 
 	var tile_set = load("res://assets/tile_set/items.tres")

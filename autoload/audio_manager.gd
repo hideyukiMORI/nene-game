@@ -25,7 +25,8 @@ var se_paths = {
 	"DASH": "res://assets/audio/se/dash_01.wav",
 	"COIN": "res://assets/audio/se/coin_01.wav",
 	"PUCHI": "res://assets/audio/se/puchi.mp3",
-	"PI01": "res://assets/audio/se/pi_01.mp3"
+	"PI01": "res://assets/audio/se/pi_01.mp3",
+	"WARP": "res://assets/audio/se/warp_02.wav"
 }
 
 func _ready() -> void:

@@ -10,9 +10,7 @@ func _input(event: InputEvent) -> void:
 		if AudioManager.sound_enabled:
 			AudioManager.play_se_with_callback("START", Callable(self, "_on_start_sound_finished"))
 		else:
-			get_tree().change_scene_to_file(GameState.game_scene)
+			GameState.change_scene("level_01")  # 直接level_01に遷移
 
 func _on_start_sound_finished() -> void:
-	var result = get_tree().change_scene_to_file(GameState.game_scene)
-	if result != OK:
-		print("Error: Failed to change scene to game scene")
+	GameState.change_scene("level_01")  # 直接level_01に遷移

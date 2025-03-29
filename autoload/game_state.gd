@@ -1,21 +1,44 @@
 extends Node
 
-@export var num_levels: int = 2
-@export var current_level: int = 1
+# シーンのパス定義
+const SCENES = {
+	"title": "res://ui/title_screen.tscn",
+	"level_01": "res://levels/level_01.tscn",
+	"cave_entrance": "res://scenes/cave_entrance.tscn",
+	"underground_lake": "res://scenes/underground_lake.tscn",
+	"crystal_cavern": "res://scenes/crystal_cavern.tscn",
+	# 他のシーンもここに追加
+}
 
-@export var game_scene: String = "res://main/main.tscn"
-@export var title_screen: String = "res://ui/title_screen.tscn"
+# 現在のシーン名
+var current_scene: String = "title"
+var last_spawn_point: String = ""
 
+# デフォルトのスポーン位置名（シーンごとに設定可能）
+var default_spawn_points = {
+	"level_01": "StartPoint",
+	"cave_entrance": "MainEntrance",
+	"underground_lake": "LakeEntrance",
+	"crystal_cavern": "CavernEntrance",
+}
+
+func change_scene(scene_name: String, spawn_point: String = "") -> void:
+	if not SCENES.has(scene_name):
+		push_error("Invalid scene name: " + scene_name)
+		return
+		
+	current_scene = scene_name
+	
+	# スポーン位置が指定されていない場合はデフォルトを使用
+	if spawn_point.is_empty():
+		spawn_point = default_spawn_points.get(scene_name, "DefaultSpawn")
+	
+	# シーン変更前に現在のスポーン位置を保存（必要に応じて）
+	GameState.last_spawn_point = spawn_point
+	
+	var result = get_tree().change_scene_to_file(SCENES[scene_name])
+	if result != OK:
+		push_error("Failed to change scene to: " + scene_name)
 
 func restart() -> void:
-	current_level = 1
-	var result = get_tree().change_scene_to_file(title_screen)
-	if result != OK:
-		print("Error: Failed to change scene to title screen")
-
-func next_level() -> void:
-	current_level += 1
-	if current_level <= num_levels:
-		var result = get_tree().reload_current_scene()
-		if result != OK:
-			print("Error: Failed to reload current scene")
+	change_scene("title")
