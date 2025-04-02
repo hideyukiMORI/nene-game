@@ -13,7 +13,8 @@ var bgm_position: float = 0.0
 
 # 音響ファイルのパスを保持
 var bgm_paths = {
-	"STAGE_01": "res://assets/audio/bgm/stage_01.wav"
+	"STAGE_01": "res://assets/audio/bgm/stage_01.wav",
+	"CAVE_01": "res://assets/audio/bgm/cave_01.wav"
 }
 
 var se_paths = {

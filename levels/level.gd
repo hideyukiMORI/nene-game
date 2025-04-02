@@ -2,6 +2,13 @@ extends Node2D
 
 @onready var settings_panel = $CanvasLayer/SettingPanel
 
+enum BGM {
+	STAGE_01,
+	CAVE_01
+}
+
+@export var bgm: BGM = BGM.STAGE_01
+
 signal score_changed(value: int)
 
 var score = 0: set = set_score
@@ -18,6 +25,7 @@ func _ready():
 	set_camera_limits()
 	$Player.dead.connect(self._on_player_dead)
 	$Player.reset($SpawnPoints/PlayerSpawn.position)
+	$CanvasLayer.visible = true
 	$Items.hide()
 
 	var tile_set = load("res://assets/tile_set/items.tres")
@@ -26,19 +34,15 @@ func _ready():
 	else:
 		print("Error: Failed to load tile set")
 	spawn_items()
-	AudioManager.play_bgm("STAGE_01")
+	AudioManager.play_bgm(BGM.keys()[bgm])
 	
 
 func set_camera_limits() -> void:
 	var map_size = $World.get_used_rect()
-	# $Player/Camera2D.limit_left = (map_size.position.x - 5) * cell_size.x
-	# $Player/Camera2D.limit_right = (map_size.end.x + 5) * cell_size.x
-	print('map_size::', map_size.position.y)
-	print('map_size-end::', map_size.end.y)
-	$Camera2D.limit_left = (map_size.position.x - 5) * cell_size.x
-	$Camera2D.limit_top = (map_size.position.y - 5) * cell_size.y
-	$Camera2D.limit_right = (map_size.end.x + 5) * cell_size.x
-	$Camera2D.limit_bottom = (map_size.end.y) * cell_size.y
+	$Camera2D.limit_left = map_size.position.x * cell_size.x
+	$Camera2D.limit_top = map_size.position.y * cell_size.y
+	$Camera2D.limit_right = map_size.end.x * cell_size.x
+	$Camera2D.limit_bottom = map_size.end.y * cell_size.y
 
 func _process(_delta: float) -> void:
 	var player_position = $Player.global_position

@@ -5,23 +5,32 @@ enum WarpType {
 	OTHER_SCENE    # 別シーンへの移動
 }
 
-enum TransitionType {
-	FADE_WHITE,    # 白フェード
-	FADE_BLACK,     # 黒フェード
-	CIRCLE_WIPE   # サークルワイプ
+enum SameSceneTransitionType {
+	FADE_WHITE = 1,    # 白フェード
+	FADE_BLACK = 2,    # 黒フェード
+	CIRCLE_WIPE = 3    # サークルワイプ
+}
+
+enum OtherSceneTransitionType {
+	FADE_WHITE = 1,    # 白フェード
+	FADE_BLACK = 2     # 黒フェード
 }
 
 # ワープの基本設定
+@export_group("Warp Settings")
 @export var warp_type: WarpType
 @export var is_enabled: bool = true
-@export var transition_type: TransitionType = TransitionType.CIRCLE_WIPE  # デフォルトはサークルワイプ
 
 # 同一シーン内ワープ用の設定
+@export_group("Same Scene Settings")
 @export var target_marker: Marker2D
+@export var transition_type: SameSceneTransitionType = SameSceneTransitionType.CIRCLE_WIPE
 
 # 別シーンへのワープ用の設定
+@export_group("Other Scene Settings")
 @export var target_scene_name: String  # シーン名を直接指定
 @export var spawn_marker_name: String  # マーカーの名前を指定
+@export var other_scene_transition_type: OtherSceneTransitionType = OtherSceneTransitionType.FADE_WHITE
 
 # シグナル
 signal player_warped(target_scene: String, spawn_marker_name: String)
@@ -60,14 +69,19 @@ func _warp_same_scene(body: Node2D) -> void:
 	
 	# トランジションタイプに応じて適切なトランジションを実行
 	match transition_type:
-		TransitionType.FADE_WHITE:
+		SameSceneTransitionType.FADE_WHITE:
 			await TransitionManager.do_fade_transition(warp_callback)
-		TransitionType.CIRCLE_WIPE:
+		SameSceneTransitionType.CIRCLE_WIPE:
 			await TransitionManager.do_circle_wipe_transition(warp_callback, body.global_position, target_marker)
-		TransitionType.FADE_BLACK:
+		SameSceneTransitionType.FADE_BLACK:
 			await TransitionManager.do_fade_black_transition(warp_callback)
 
 func _warp_other_scene() -> void:
+	print("Warp to other scene: ", target_scene_name)
+	print("Spawn marker name: ", spawn_marker_name)
+	print("Transition type: ", other_scene_transition_type)
+	print("OtherSceneTransitionType FADE_WHITE:", OtherSceneTransitionType.FADE_WHITE)
+	print("OtherSceneTransitionType FADE_BLACK:", OtherSceneTransitionType.FADE_BLACK)
 	if target_scene_name.is_empty():
 		push_error("Target scene name is not set!")
 		return
@@ -76,7 +90,16 @@ func _warp_other_scene() -> void:
 		push_error("Invalid scene name: " + target_scene_name)
 		return
 	
-	GameState.change_scene(target_scene_name, spawn_marker_name)
+	# トランジション付きのワープ
+	var warp_callback = func():
+		GameState.change_scene(target_scene_name, spawn_marker_name)
+
+	# トランジションタイプに応じて適切なトランジションを実行
+	match other_scene_transition_type:
+		OtherSceneTransitionType.FADE_WHITE:
+			await TransitionManager.do_fade_transition(warp_callback)
+		OtherSceneTransitionType.FADE_BLACK:
+			await TransitionManager.do_fade_black_transition(warp_callback)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:

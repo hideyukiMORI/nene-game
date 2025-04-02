@@ -1,6 +1,11 @@
 extends CharacterBody2D
 
+# @export var walk_speed: int = 350
 @export var dash_speed: int = 350
+@export var dash_trail_ground_start_speed: int = 400
+@export var dash_trail_ground_end_speed: int = 350
+@export var dash_trail_air_speed: int = 800
+@export var dash_trail_air_end_speed: int = 350
 @export var jump_speed: int = -500
 @export var gravity: int = 1000
 @export var climb_speed: int = 50
@@ -19,6 +24,8 @@ var life: int = 3
 var jump_count: int = 0
 var is_on_ladder: bool = false
 var coyote_time: bool = false
+var bounce_grace_time: float = 0.1
+var bounce_timer: float = 0.0
 
 func _ready() -> void:
 	change_state(State.IDLE)
@@ -37,49 +44,76 @@ func reset(pos) -> void:
 
 func change_state(new_state: State):
 	if state == State.DASH and new_state != State.DASH:
-		# $DashSound.stop()  # Stop the dash sound when leaving RUN state
 		AudioManager.stop_se("DASH")
-		$DashTrail.emitting = false
 	if state != new_state:
 		state = new_state
-	match state:
-		State.IDLE:
-			new_anim = "idle"
-		State.WALK:
-			new_anim = "walk"
-		State.DASH:
-			new_anim = "dash"
-			AudioManager.play_se("DASH", true)
-			$DashTrail.emitting = true
-			update_particle_direction()
-		State.CROUCH:
-			new_anim = 'crouch'
-		State.HURT:
-			new_anim = 'hurt'
-			velocity.y = -200
-			velocity.x = -100 * sign(velocity.x)
-			life -= 1
-			emit_signal('life_changed', life)
-			await get_tree().create_timer(0.5).timeout
-			change_state(State.IDLE)
-			if life <= 0:
-				change_state(State.DEAD)
-		State.JUMP:
-			new_anim = 'jump_up'
-		State.CLIMB:
-			new_anim = 'climb'
-		State.DEAD:
-			emit_signal('dead')
-			hide()
+		match state:
+			State.IDLE:
+				play_animation("idle")
+			State.WALK:
+				play_animation("walk")
+			State.DASH:
+				play_animation("dash")
+				AudioManager.play_se("DASH", true)
+			State.CROUCH:
+				play_animation("crouch")
+			State.HURT:
+				play_animation("hurt")
+				velocity.y = -200
+				velocity.x = -100 * sign(velocity.x)
+				life -= 1
+				emit_signal('life_changed', life)
+				await get_tree().create_timer(0.5).timeout
+				change_state(State.IDLE)
+				if life <= 0:
+					change_state(State.DEAD)
+			State.JUMP:
+				play_animation("jump_up")
+			State.CLIMB:
+				play_animation("climb")
+			State.DEAD:
+				emit_signal('dead')
+				hide()
+
+func play_animation(animation_name: String) -> void:
+	anim = animation_name
+	new_anim = animation_name
+	$AnimationPlayer.play(animation_name)
 
 func _physics_process(delta: float) -> void:
 	if state != State.CLIMB:
 		velocity.y += gravity * delta
 	get_input(delta)
-		
-	if new_anim != anim:
-		anim = new_anim
-		$AnimationPlayer.play(anim)
+	
+	# ダッシュの残像エフェクト処理
+	var speed = velocity.length()  # x と y の合成速度を計算
+	var dash = Input.is_action_pressed("dash")
+
+	print("SPEED :: ", speed)
+
+	if is_on_floor():
+		# 地上での処理
+		if not $DashTrail.emitting:
+			# 残像が出ていない状態で、ダッシュボタンを押していて、速度が閾値を超えたら開始
+			if dash and speed > dash_trail_ground_start_speed:
+				$DashTrail.emitting = true
+				update_particle_direction()
+		else:
+			# 残像が出ている状態で、速度が閾値以下になったら終了（ダッシュボタンの状態は関係なし）
+			if speed < dash_trail_ground_end_speed:
+				$DashTrail.emitting = false
+	else:
+		# 空中での処理（変更なし）
+		if not $DashTrail.emitting and speed > dash_trail_air_speed:
+			$DashTrail.emitting = true
+			update_particle_direction()
+		elif $DashTrail.emitting and speed < dash_trail_air_end_speed:
+			$DashTrail.emitting = false
+
+	# ジャンプ下降時のアニメーション
+	if state == State.JUMP and velocity.y > 0:
+		play_animation("jump_down")
+	
 	move_and_slide()
 	if state == State.HURT:
 		return
@@ -107,20 +141,41 @@ func _physics_process(delta: float) -> void:
 			velocity.x += normal.x * gravity * delta * 2  # Increase the multiplier for faster sliding
 
 	if state == State.JUMP and is_on_floor():
-		change_state(State.IDLE)
-		$Dust.emitting = true
-	if state == State.JUMP and velocity.y > 0:
-		new_anim = 'jump_down'
+		$Dust.emitting = true  # パーティクル処理を先に実行
+		# 移動入力がある場合
+		if Input.is_action_pressed("right") or Input.is_action_pressed("left"):
+			if Input.is_action_pressed("dash"):
+				change_state(State.DASH)
+			else:
+				change_state(State.WALK)
+		else:
+			change_state(State.IDLE)
+
 	if position.y > 1000:
 		change_state(State.DEAD)
 
 	if is_on_floor():
+		bounce_timer = bounce_grace_time
 		$CoyoteTimer.stop()
 		coyote_time = true
 		jump_count = 0
+		
+		# 速度に基づく残像処理は、DASH状態の時のみ行う
+		if state == State.DASH and abs(velocity.x) > dash_speed:
+			$DashTrail.emitting = true
 	else:
+		bounce_timer = max(0, bounce_timer - delta)
 		if !$CoyoteTimer.is_stopped():
 			$CoyoteTimer.start()
+
+	if state in [State.IDLE, State.WALK, State.DASH] and not is_on_floor() and bounce_timer <= 0:
+		change_state(State.JUMP)
+
+	if state in [State.IDLE, State.WALK, State.DASH] and not is_on_floor():
+		change_state(State.JUMP)
+
+	# if Input.is_action_pressed("select"):
+	# 	get_tree().quit()
 
 func get_input(delta: float):
 	if state == State.HURT:
@@ -200,25 +255,15 @@ func get_input(delta: float):
 	if state in [State.IDLE, State.CROUCH] and velocity.x != 0:
 		change_state(State.WALK)
 
-	if state == State.WALK and abs(velocity.x) > dash_speed:
-		change_state(State.DASH)
+	# 速度に基づく状態遷移
 	if state == State.DASH and abs(velocity.x) <= dash_speed:
-		change_state(State.WALK)
+		change_state(State.WALK)  # 速度がしきい値以下ならWALK
+	elif state == State.WALK and abs(velocity.x) > dash_speed and dash:
+		change_state(State.DASH)  # 速度がしきい値を超えていて、かつdashボタンが押されている場合のみDASH
 
-	if state == State.DASH and !dash and (right or left):
-		change_state(State.WALK)
-
-	if state in [State.DASH, State.WALK] and velocity.x == 0:
+	# 完全停止時の処理
+	if state in [State.DASH, State.WALK] and abs(velocity.x) < 0.1:  # 微小な速度も考慮
 		change_state(State.IDLE)
-
-	if state in [State.IDLE, State.WALK, State.DASH] and not is_on_floor():
-		change_state(State.JUMP)
-
-	# if Input.is_action_pressed("select"):
-	# 	get_tree().quit()
-
-
-
 
 func hurt() -> void:
 	# if state != State.HURT:
