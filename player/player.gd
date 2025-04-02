@@ -278,7 +278,8 @@ func get_input(delta: float):
 			AudioManager.play_se("JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed
-			velocity.x = -target_velocity_x
+			# 壁ジャンプ時は、壁と反対方向に強めに飛ぶように修正
+			velocity.x = -target_velocity_x * 3  # 壁と反対方向に、現在の速度の1.5倍の力で飛ぶ
 			jump_count += 1
 
 	if state in [State.IDLE, State.CROUCH] and velocity.x != 0:
