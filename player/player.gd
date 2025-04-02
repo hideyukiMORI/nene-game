@@ -193,27 +193,42 @@ func get_input(delta: float):
 	var dash = Input.is_action_pressed("dash")
 
 	var target_velocity_x = 0
-	if right:
-		target_velocity_x += dash_speed
-		$Sprite2D.flip_h = false
-	if left:
-		target_velocity_x -= dash_speed
-		$Sprite2D.flip_h = true
-
-	if dash:
-		target_velocity_x *= 2
-
-	var current_acceleration = acceleration if is_on_floor() else air_acceleration
-
-	# 空中での慣性制御
-	if not is_on_floor():
+	if is_on_floor():
+		# 地上での処理
+		if right:
+			target_velocity_x += dash_speed
+			$Sprite2D.flip_h = false
+		if left:
+			target_velocity_x -= dash_speed
+			$Sprite2D.flip_h = true
+		if dash:
+			target_velocity_x *= 2
+	else:
+		# 空中での処理
 		if not (right or left):
 			# 入力がない場合は、現在の速度からゆっくり減速
-			target_velocity_x = velocity.x * 0.95  # 空中での減速率
+			target_velocity_x = velocity.x * 0.95
 		else:
-			# 入力がある場合は、方向転換を可能に
-			current_acceleration = air_acceleration * 1  # 空中での方向転換をより自然に
+			# 空中での方向転換は、現在の速度を基準に
+			var current_speed = abs(velocity.x)
+			if current_speed > dash_speed:
+				# 高速移動時は、入力方向に応じて徐々に減速しながら方向転換
+				if right:
+					target_velocity_x = min(velocity.x + dash_speed * 0.3, dash_speed)
+					$Sprite2D.flip_h = false
+				if left:
+					target_velocity_x = max(velocity.x - dash_speed * 0.3, -dash_speed)
+					$Sprite2D.flip_h = true
+			else:
+				# 低速の場合は、入力方向に少しずつ加速
+				if right:
+					target_velocity_x = min(velocity.x + dash_speed * 0.5, dash_speed)
+					$Sprite2D.flip_h = false
+				if left:
+					target_velocity_x = max(velocity.x - dash_speed * 0.5, -dash_speed)
+					$Sprite2D.flip_h = true
 	
+	var current_acceleration = acceleration if is_on_floor() else air_acceleration
 	velocity.x = move_toward(velocity.x, target_velocity_x, current_acceleration * delta)
 
 	if is_on_floor():
