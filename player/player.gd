@@ -3,7 +3,7 @@ extends CharacterBody2D
 # @export var walk_speed: int = 350
 @export var dash_speed: int = 350
 @export var dash_trail_ground_start_speed: int = 400
-@export var dash_trail_ground_end_speed: int = 350
+@export var dash_trail_ground_end_speed: int = 355
 @export var dash_trail_air_speed: int = 800
 @export var dash_trail_air_end_speed: int = 350
 @export var jump_speed: int = -500
@@ -90,6 +90,10 @@ func _physics_process(delta: float) -> void:
 	var dash = Input.is_action_pressed("dash")
 
 	print("SPEED :: ", speed)
+	print("DASH TRAIL GROUND END SPEED :: ", dash_trail_ground_end_speed)
+	print("is_on_floor :: ", is_on_floor())
+	print("emitting :: ", $DashTrail.emitting)
+	print("result :: ", is_on_floor() and not $DashTrail.emitting and speed > dash_trail_ground_start_speed)
 
 	if is_on_floor():
 		# 地上での処理
@@ -200,6 +204,16 @@ func get_input(delta: float):
 		target_velocity_x *= 2
 
 	var current_acceleration = acceleration if is_on_floor() else air_acceleration
+
+	# 空中での慣性制御
+	if not is_on_floor():
+		if not (right or left):
+			# 入力がない場合は、現在の速度からゆっくり減速
+			target_velocity_x = velocity.x * 0.95  # 空中での減速率
+		else:
+			# 入力がある場合は、方向転換を可能に
+			current_acceleration = air_acceleration * 1  # 空中での方向転換をより自然に
+	
 	velocity.x = move_toward(velocity.x, target_velocity_x, current_acceleration * delta)
 
 	if is_on_floor():
