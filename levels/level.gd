@@ -22,20 +22,18 @@ func _ready():
 	score = 0
 	set_process_input(true)
 	$Camera2D.make_current()
+	
+	# タイルセットの読み込みが完了してから初期化を進める
+	tile_coords["coin_01"] = find_tile_coords_by_name($Items.tile_set, "coin_01")
 	set_camera_limits()
+	spawn_items()
+	
 	$Player.dead.connect(self._on_player_dead)
 	$Player.reset($SpawnPoints/PlayerSpawn.position)
 	$CanvasLayer.visible = true
 	$Items.hide()
-
-	var tile_set = load("res://assets/tile_set/items.tres")
-	if tile_set:
-		tile_coords["coin_01"] = find_tile_coords_by_name(tile_set, "coin_01")
-	else:
-		print("Error: Failed to load tile set")
-	spawn_items()
-	AudioManager.play_bgm(BGM.keys()[bgm])
 	
+	AudioManager.play_bgm(BGM.keys()[bgm])
 
 func set_camera_limits() -> void:
 	var map_size = $World.get_used_rect()
