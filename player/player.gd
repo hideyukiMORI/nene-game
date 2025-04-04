@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 # @export var walk_speed: int = 350
-@export var dash_speed: int = 350
+@export var dash_speed: int = 330
 @export var dash_trail_ground_start_speed: int = 400
 @export var dash_trail_ground_end_speed: int = 355
 @export var dash_trail_air_speed: int = 800
@@ -26,6 +26,7 @@ var is_on_ladder: bool = false
 var coyote_time: bool = false
 var bounce_grace_time: float = 0.1
 var bounce_timer: float = 0.0
+var was_dashing_on_ground: bool = false
 
 func _ready() -> void:
 	change_state(State.IDLE)
@@ -88,12 +89,6 @@ func _physics_process(delta: float) -> void:
 	# ダッシュの残像エフェクト処理
 	var speed = velocity.length()  # x と y の合成速度を計算
 	var dash = Input.is_action_pressed("dash")
-
-	print("SPEED :: ", speed)
-	print("DASH TRAIL GROUND END SPEED :: ", dash_trail_ground_end_speed)
-	print("is_on_floor :: ", is_on_floor())
-	print("emitting :: ", $DashTrail.emitting)
-	print("result :: ", is_on_floor() and not $DashTrail.emitting and speed > dash_trail_ground_start_speed)
 
 	if is_on_floor():
 		# 地上での処理
@@ -188,6 +183,7 @@ func get_input(delta: float):
 	var right = Input.is_action_pressed("right")
 	var left = Input.is_action_pressed("left")
 	var jump = Input.is_action_just_pressed("jump")
+	var jump_held = Input.is_action_pressed("jump")  # ジャンプボタンを押し続けているかどうかを追加
 	var down = Input.is_action_pressed("crouch")
 	var climb = Input.is_action_pressed("climb")
 	var dash = Input.is_action_pressed("dash")
@@ -203,31 +199,37 @@ func get_input(delta: float):
 			$Sprite2D.flip_h = true
 		if dash:
 			target_velocity_x *= 2
+			was_dashing_on_ground = true  # 地上でダッシュ中ならフラグを設定
 	else:
 		# 空中での処理
 		if not (right or left):
 			# 入力がない場合は、現在の速度からゆっくり減速
 			target_velocity_x = velocity.x * 0.95
 		else:
-			# 空中での方向転換は、現在の速度を基準に
-			var current_speed = abs(velocity.x)
-			if current_speed > dash_speed:
-				# 高速移動時は、入力方向に応じて徐々に減速しながら方向転換
-				if right:
-					target_velocity_x = min(velocity.x + dash_speed * 0.3, dash_speed)
-					$Sprite2D.flip_h = false
-				if left:
-					target_velocity_x = max(velocity.x - dash_speed * 0.3, -dash_speed)
-					$Sprite2D.flip_h = true
-			else:
-				# 低速の場合は、入力方向に少しずつ加速
-				if right:
-					target_velocity_x = min(velocity.x + dash_speed * 0.5, dash_speed)
-					$Sprite2D.flip_h = false
-				if left:
-					target_velocity_x = max(velocity.x - dash_speed * 0.5, -dash_speed)
-					$Sprite2D.flip_h = true
-	
+			# 空中での方向転換は、目標速度を基準に
+			if right:
+				# 地上でダッシュ中で、かつ現在の速度が正の方向なら、ダッシュ速度を維持
+				if was_dashing_on_ground and velocity.x > 0:
+					target_velocity_x = dash_speed * 2
+				else:
+					target_velocity_x = dash_speed * 0.8
+				$Sprite2D.flip_h = false
+			if left:
+				# 地上でダッシュ中で、かつ現在の速度が負の方向なら、ダッシュ速度を維持
+				if was_dashing_on_ground and velocity.x < 0:
+					target_velocity_x = -dash_speed * 2
+				else:
+					target_velocity_x = -dash_speed * 0.8
+				$Sprite2D.flip_h = true
+
+		# 空中で速度が閾値を下回ったらダッシュ効果を解除
+		if was_dashing_on_ground and abs(velocity.x) < dash_trail_air_end_speed:
+			was_dashing_on_ground = false
+
+	# ダッシュボタンを離したら、フラグをリセット
+	if not dash:
+		was_dashing_on_ground = false
+
 	var current_acceleration = acceleration if is_on_floor() else air_acceleration
 	velocity.x = move_toward(velocity.x, target_velocity_x, current_acceleration * delta)
 
@@ -278,8 +280,7 @@ func get_input(delta: float):
 			AudioManager.play_se("JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed
-			# 壁ジャンプ時は、壁と反対方向に強めに飛ぶように修正
-			velocity.x = -target_velocity_x * 3  # 壁と反対方向に、現在の速度の1.5倍の力で飛ぶ
+			velocity.x = -target_velocity_x
 			jump_count += 1
 
 	if state in [State.IDLE, State.CROUCH] and velocity.x != 0:

@@ -33,7 +33,7 @@ enum OtherSceneTransitionType {
 @export var other_scene_transition_type: OtherSceneTransitionType = OtherSceneTransitionType.FADE_WHITE
 
 # シグナル
-signal player_warped(target_scene: String, spawn_marker_name: String)
+# signal player_warped(target_scene: String, spawn_marker_name: String)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
