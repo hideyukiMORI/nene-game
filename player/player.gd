@@ -12,7 +12,6 @@ extends CharacterBody2D
 @export var acceleration: int = 800
 @export var air_acceleration: int = 5500
 @export var max_jumps: int = 2
-@export var fall_speed_threshold: int = 500  # 落下音が鳴る速度の閾値
 @export var fast_fall_speed: int = 1200  # 垂直落下時の速度（より速く）
 @export var fast_fall_gravity: int = 3000  # 垂直落下時の重力（より強く）
 @export var fast_fall_delay: float = 0.1  # 垂直落下開始までの遅延
@@ -42,6 +41,13 @@ var last_trail_time: float = 0.0  # 最後に残像を生成した時間
 var fall_start_y: float = 0.0  # 落下開始時のY座標
 var last_ground_y: float = 0.0  # 最後に地面にいた時のY座標
 var is_falling: bool = false  # 落下フラグ
+
+# カメラ揺れ用の変数を追加
+var is_camera_shaking: bool = false
+var shake_amount: float = 0.0
+var shake_duration: float = 0.0
+var shake_timer: float = 0.0
+var original_camera_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	change_state(State.IDLE)
@@ -99,6 +105,11 @@ func play_animation(animation_name: String) -> void:
 	$AnimationPlayer.play(animation_name)
 
 func _physics_process(delta: float) -> void:
+	if is_camera_shaking:
+		if state != State.CROUCH:
+			change_state(State.CROUCH)
+		return
+		
 	if state != State.CLIMB:
 		velocity.y += gravity * delta
 	
@@ -106,8 +117,8 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor():
 		last_ground_y = position.y
 	
-	# ジャンプの頂点から落下開始時にfall_start_yを記録
-	if state == State.JUMP and velocity.y > 0 and not is_falling and not is_fast_falling:
+	# 落下開始時の処理
+	if state == State.JUMP and velocity.y > 0 and not is_falling:
 		is_falling = true
 		fall_start_y = position.y
 		print("FALL START RECORDED: ", fall_start_y)
@@ -124,8 +135,8 @@ func _physics_process(delta: float) -> void:
 				is_fast_falling = true
 				velocity.y = fast_fall_speed
 				gravity = fast_fall_gravity
-				AudioManager.play_se("FALL")  # 大きな落下音
 				$FastFallParticles.emitting = true  # パーティクルエフェクト
+				# AudioManager.play_se("FALL_START")  # 垂直落下開始時に音を再生
 				
 				# 残像の生成間隔を制御
 				trail_timer += delta
@@ -139,23 +150,23 @@ func _physics_process(delta: float) -> void:
 				is_fast_falling = false
 				gravity = 1000  # 通常の重力に戻す
 				$FastFallParticles.emitting = false  # パーティクルエフェクトを停止
-
+	
 	# 着地時に垂直落下の状態をリセット
 	if is_on_floor():
-		if is_fast_falling:
-			is_fast_falling = false
-			gravity = 1000  # 通常の重力に戻す
-			$FastFallParticles.emitting = false  # パーティクルエフェクトを停止
 		fast_fall_timer = 0.0
 		trail_timer = 0.0
 	
-	# 着地時のパーティクル処理（状態遷移の前に実行）
+	# 着地時の状態遷移
 	if state == State.JUMP and is_on_floor():
+		print("LANDING DETECTED - STATE: ", state, " ON FLOOR: ", is_on_floor())
+		
+		# パーティクル処理
 		print("JUMP STATE AND ON FLOOR - PROCESSING PARTICLES")
 		var fall_distance = abs(position.y - fall_start_y)
 		print("FALL START Y: ", fall_start_y)
 		print("CURRENT Y: ", position.y)
 		print("FALL DISTANCE: ", fall_distance)
+		print("IS FAST FALLING: ", is_fast_falling)  # デバッグ用に追加
 		
 		var dust_particles = $Dust.process_material as ParticleProcessMaterial
 		
@@ -163,29 +174,50 @@ func _physics_process(delta: float) -> void:
 			print("FALL DISTANCE OVER THRESHOLD ----------------------")
 			# 落下距離に応じてパーティクルを派手に
 			var base_scale = 1.0
-			var max_scale = 2.5  # 最大スケールを1.8倍に変更
+			var max_scale = 2.5  # 最大スケールを2.5倍に変更
 			var min_distance = 130.0
 			var max_distance = 600.0
 			
-			# 落下距離に応じたスケール係数を計算（130-400の範囲で1.0-1.8に正規化）
+			# 落下距離に応じたスケール係数を計算（130-600の範囲で1.0-2.5に正規化）
 			var normalized_distance = clamp((fall_distance - min_distance) / (max_distance - min_distance), 0.0, 1.0)
 			var scale_factor = base_scale + (max_scale - base_scale) * normalized_distance
 			
 			dust_particles.spread = 64.0  # 広がり角度は固定
-			dust_particles.emission_box_extents = Vector3(1.0, scale_factor * 10.0, 1.0)  # 発生範囲を大きく（最大y:18.0）
+			dust_particles.emission_box_extents = Vector3(1.0, scale_factor * 10.0, 1.0)  # 発生範囲を大きく（最大y:25.0）
 			$Dust.amount = int(20 * scale_factor * 1.2)  # パーティクルの量を1.2倍に
 			print("DUST AMOUNT --------------------: ", $Dust.amount)
 			print("SCALE FACTOR --------------------: ", scale_factor)
+			
+			# 落下距離が600を超えたらカメラを揺らす
+			if fall_distance > 500.0:
+				print("SHAKE CAMERA TRIGGERED ----------------------")
+				var camera = get_viewport().get_camera_2d()
+				if camera:
+					var calculated_shake = min((fall_distance - 600.0) * 0.5, 20.0)  # 最大20.0の揺れ、計算を調整
+					var duration = 0.3  # 0.3秒間揺らす
+					_shake_camera(camera, calculated_shake, duration)
+					# カメラが揺れるほどの大きな着地の時だけ着地音を再生
+					AudioManager.play_se("LANDING")
+			# 垂直落下の時は、fall_distanceに関わらずLANDING_02を再生
+			elif is_fast_falling:
+				print("LANDING_02 TRIGGERED (OVER THRESHOLD) ----------------------")
+				AudioManager.play_se("LANDING_02")  # 垂直落下時の着地音
+				change_state(State.CROUCH)
 		else:
 			print("FALL DISTANCE UNDER THRESHOLD")
 			# 通常のパーティクル設定
 			dust_particles.spread = 64.0  # 通常の広がり角度
 			dust_particles.emission_box_extents = Vector3(1.0, 6.0, 1.0)  # 通常の発生範囲
 			$Dust.amount = 20
+			# 大きな落下でない場合で、垂直落下の時はLANDING_02を再生
+			if is_fast_falling:
+				print("LANDING_02 TRIGGERED (UNDER THRESHOLD) ----------------------")
+				AudioManager.play_se("LANDING_02")  # 垂直落下時の着地音
+				change_state(State.CROUCH)
 		
 		$Dust.emitting = true
 		is_falling = false  # 着地時に落下フラグをリセット
-
+		
 	# 着地時の状態遷移
 	if state == State.JUMP and is_on_floor():
 		print("LANDING DETECTED - STATE: ", state, " ON FLOOR: ", is_on_floor())
@@ -206,6 +238,11 @@ func _physics_process(delta: float) -> void:
 
 	if is_on_floor():
 		# 地上での処理
+		if is_fast_falling:
+			is_fast_falling = false
+			gravity = 1000  # 通常の重力に戻す
+			$FastFallParticles.emitting = false  # パーティクルエフェクトを停止
+
 		if not is_trail_active:
 			# 残像が出ていない状態で、ダッシュボタンを押していて、速度が閾値を超えたら開始
 			if dash and speed > dash_trail_ground_start_speed:
@@ -500,3 +537,51 @@ func create_fall_trail() -> void:
 func set_fall_start_y(y: float) -> void:
 	fall_start_y = y
 	print("FALL START Y SET TO: ", fall_start_y)
+
+# カメラを揺らす関数
+func _shake_camera(camera: Camera2D, amount: float, duration: float) -> void:
+	print("SHAKE CAMERA STARTED - Amount: ", amount, " Duration: ", duration)
+	original_camera_position = camera.global_position
+	shake_amount = amount
+	shake_duration = duration
+	shake_timer = 0.0
+	is_camera_shaking = true
+	
+	# カメラの追随を一時的に無効にする
+	# var level = get_parent()
+	# if level and level.has_method("set_camera_follow_enabled"):
+	# 	level.set_camera_follow_enabled(false)
+	# 	print("Camera follow disabled")
+
+func _process(delta: float) -> void:
+	if is_camera_shaking:
+		var camera = get_viewport().get_camera_2d()
+		if camera:
+			shake_timer += delta
+			
+			# 揺れの強さを時間とともに減衰させる
+			var progress = shake_timer / shake_duration
+			var current_shake_amount = shake_amount * (1.0 - progress) * sin(progress * PI * 16.0)
+			
+			# ランダムな揺れを生成（x方向は小さく、y方向は大きく）
+			var random_offset = Vector2(
+				randf_range(-current_shake_amount, current_shake_amount) * 0.05,
+				randf_range(-current_shake_amount, current_shake_amount) * 0.5
+			)
+			
+			# カメラの位置を更新
+			camera.global_position = original_camera_position + random_offset
+			
+			# 揺れが終了したら
+			if shake_timer >= shake_duration:
+				is_camera_shaking = false
+				camera.global_position = original_camera_position
+				
+				# カメラの追随を再開
+				var level = get_parent()
+				if level and level.has_method("set_camera_follow_enabled"):
+					level.set_camera_follow_enabled(true)
+					print("Camera follow enabled")
+				
+				print("SHAKE CAMERA FINISHED - Frame: ", Engine.get_physics_frames())
+				print("Final camera position: ", camera.global_position)
