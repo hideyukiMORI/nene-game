@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dygt0jtnlvuqw"]
+[gd_scene load_steps=4 format=3 uid="uid://dygt0jtnlvuqw"]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_m6swn"]
+[ext_resource type="PackedScene" uid="uid://mmbjqsbdija4" path="res://items/coin.tscn" id="2_o7da3"]
 [ext_resource type="Theme" uid="uid://cf5p1g5ho3kg7" path="res://assets/theme/nene_theme.tres" id="3_u1p5k"]
 
 [node name="HUD" type="Control"]
@@ -14,22 +15,74 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_m6swn")
 
-[node name="ScoreLabel" type="Label" parent="."]
+[node name="TopBar" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
 offset_left = 24.0
 offset_top = 24.0
 offset_right = -24.0
+offset_bottom = 88.0
 grow_horizontal = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
+alignment = 1
+
+[node name="ScoreBox" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+alignment = 1
+
+[node name="Coin" parent="TopBar/ScoreBox" instance=ExtResource("2_o7da3")]
+position = Vector2(20, 44)
+scale = Vector2(3, 3)
+
+[node name="Control" type="Control" parent="TopBar/ScoreBox"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+
+[node name="ScoreLabel" type="Label" parent="TopBar/ScoreBox"]
+layout_mode = 2
+size_flags_horizontal = 0
 theme = ExtResource("3_u1p5k")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 16
 theme_override_font_sizes/font_size = 64
-text = "0
-"
+text = "0"
+
+[node name="Spacer" type="Control" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HealthBar" type="ProgressBar" parent="TopBar"]
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme = ExtResource("3_u1p5k")
+value = 100.0
+show_percentage = false
+
+[node name="HealthLabel" type="Label" parent="TopBar/HealthBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -92.0
+offset_top = -26.0
+offset_right = 92.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_u1p5k")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 40
+text = "100 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Mask" type="ColorRect" parent="."]
 layout_mode = 2

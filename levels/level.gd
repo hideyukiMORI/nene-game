@@ -11,7 +11,6 @@ enum BGM {
 
 signal score_changed(value: int)
 
-var score = 0: set = set_score
 var cell_size = Vector2(16, 16)
 var tile_coords = {}
 var is_paused = false
@@ -19,7 +18,6 @@ var is_paused = false
 var Item = preload('res://items/item.tscn')
 
 func _ready():
-	score = 0
 	set_process_input(true)
 	$Camera2D.make_current()
 	
@@ -34,6 +32,9 @@ func _ready():
 	$Items.hide()
 	
 	AudioManager.play_bgm(BGM.keys()[bgm])
+	
+	# グローバルなスコア変更シグナルを接続
+	GameState.score_changed.connect(_on_global_score_changed)
 
 func set_camera_limits() -> void:
 	var map_size = $World.get_used_rect()
@@ -82,16 +83,12 @@ func spawn_items() -> void:
 # 			s.size = Vector2(8, 16)
 # 			c.shape = s
 
+func _on_global_score_changed(value: int) -> void:
+	score_changed.emit(value)
+
 func _on_Collectible_pickup():
-	score += 1
+	GameState.add_score(1)  # スコアを更新
 
-func set_score(value):
-	score = value
-	score_changed.emit(score)
-
-# func _on_door_entered(body):
-# 	GameState.next_level()
-	
 func _on_player_dead():
 	AudioManager.reset_bgm()
 
