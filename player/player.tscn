@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://b67i3tfkkuedg"]
+[gd_scene load_steps=19 format=3 uid="uid://b67i3tfkkuedg"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_jkgy0"]
 [ext_resource type="Texture2D" uid="uid://c6uc227vwf5or" path="res://assets/sprites/nene_03.png" id="2_d871f"]
@@ -178,6 +178,17 @@ scale_over_velocity_min = 1.0
 scale_over_velocity_max = 1.0
 color_ramp = SubResource("GradientTexture1D_r0vyi")
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_o73hh"]
+particle_flag_disable_z = true
+direction = Vector3(0, 1, 0)
+initial_velocity_min = 50.0
+initial_velocity_max = 150.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.3
+color = Color(0, 1, 0.87451, 0.392157)
+anim_speed_min = 25.0
+anim_speed_max = 125.0
+
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_mask = 22
 script = ExtResource("1_jkgy0")
@@ -217,6 +228,13 @@ lifetime = 0.5
 one_shot = true
 speed_scale = 2.0
 explosiveness = 0.7
+
+[node name="FastFallParticles" type="GPUParticles2D" parent="."]
+scale = Vector2(0.5, 1)
+emitting = false
+amount = 70
+process_material = SubResource("ParticleProcessMaterial_o73hh")
+lifetime = 0.5
 
 [node name="CoyoteTimer" type="Timer" parent="."]
 wait_time = 0.05

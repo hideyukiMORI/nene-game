@@ -3,15 +3,21 @@ extends CharacterBody2D
 # @export var walk_speed: int = 350
 @export var dash_speed: int = 330
 @export var dash_trail_ground_start_speed: int = 400
-@export var dash_trail_ground_end_speed: int = 355
+@export var dash_trail_ground_end_speed: int = 331
 @export var dash_trail_air_speed: int = 800
-@export var dash_trail_air_end_speed: int = 350
+@export var dash_trail_air_end_speed: int = 300
 @export var jump_speed: int = -500
 @export var gravity: int = 1000
 @export var climb_speed: int = 50
 @export var acceleration: int = 800
 @export var air_acceleration: int = 5500
 @export var max_jumps: int = 2
+@export var fall_speed_threshold: int = 500  # 落下音が鳴る速度の閾値
+@export var fast_fall_speed: int = 1200  # 垂直落下時の速度（より速く）
+@export var fast_fall_gravity: int = 3000  # 垂直落下時の重力（より強く）
+@export var fast_fall_delay: float = 0.1  # 垂直落下開始までの遅延
+@export var trail_interval: float = 0.1  # 残像の生成間隔（より広く）
+@export var min_fall_height: float = 100.0  # パーティクルが大きくなる最小落下距離
 
 signal life_changed
 signal dead
@@ -27,6 +33,15 @@ var coyote_time: bool = false
 var bounce_grace_time: float = 0.1
 var bounce_timer: float = 0.0
 var was_dashing_on_ground: bool = false
+var is_trail_active: bool = false
+var trail_timer: float = 0.0  # 残像生成用のタイマー
+var fast_fall_timer: float = 0.0
+var is_fast_falling: bool = false
+var trail_sprites: Array = []  # 残像スプライトを保持
+var last_trail_time: float = 0.0  # 最後に残像を生成した時間
+var fall_start_y: float = 0.0  # 落下開始時のY座標
+var last_ground_y: float = 0.0  # 最後に地面にいた時のY座標
+var is_falling: bool = false  # 落下フラグ
 
 func _ready() -> void:
 	change_state(State.IDLE)
@@ -34,10 +49,12 @@ func _ready() -> void:
 	position.y = 200
 	$CoyoteTimer.wait_time = 0.2
 	$CoyoteTimer.connect("timeout", Callable(self, "_on_CoyoteTimer_timeout"))
+	last_ground_y = position.y  # 初期位置を記録
 
 func reset(pos) -> void:
 	print("START", pos)
 	position = pos
+	last_ground_y = pos.y  # リセット時に新しい位置を記録
 	show()
 	life = 3
 	emit_signal("life_changed", life)
@@ -84,6 +101,103 @@ func play_animation(animation_name: String) -> void:
 func _physics_process(delta: float) -> void:
 	if state != State.CLIMB:
 		velocity.y += gravity * delta
+	
+	# 地面にいる時のY座標を記録
+	if is_on_floor():
+		last_ground_y = position.y
+	
+	# ジャンプの頂点から落下開始時にfall_start_yを記録
+	if state == State.JUMP and velocity.y > 0 and not is_falling and not is_fast_falling:
+		is_falling = true
+		fall_start_y = position.y
+		print("FALL START RECORDED: ", fall_start_y)
+	
+	# 垂直落下の処理
+	if Input.is_action_pressed("crouch") and not is_on_floor() and state == State.JUMP:
+		print("FAST FALL CHECK - velocity.y: ", velocity.y, " is_falling: ", is_falling, " is_fast_falling: ", is_fast_falling, " fast_fall_timer: ", fast_fall_timer)
+		fast_fall_timer += delta
+		if fast_fall_timer >= fast_fall_delay:
+			if not is_fast_falling:
+				# 垂直落下開始時の位置を記録
+				fall_start_y = position.y
+				print("FAST FALL START RECORDED: ", fall_start_y)
+				is_fast_falling = true
+				velocity.y = fast_fall_speed
+				gravity = fast_fall_gravity
+				AudioManager.play_se("FALL")  # 大きな落下音
+				$FastFallParticles.emitting = true  # パーティクルエフェクト
+				
+				# 残像の生成間隔を制御
+				trail_timer += delta
+				if trail_timer >= trail_interval:
+					create_fall_trail()
+					trail_timer = 0.0
+		elif not Input.is_action_pressed("crouch"):  # ボタンを離した時のみタイマーをリセット
+			fast_fall_timer = 0.0
+			trail_timer = 0.0
+			if is_fast_falling:
+				is_fast_falling = false
+				gravity = 1000  # 通常の重力に戻す
+				$FastFallParticles.emitting = false  # パーティクルエフェクトを停止
+
+	# 着地時に垂直落下の状態をリセット
+	if is_on_floor():
+		if is_fast_falling:
+			is_fast_falling = false
+			gravity = 1000  # 通常の重力に戻す
+			$FastFallParticles.emitting = false  # パーティクルエフェクトを停止
+		fast_fall_timer = 0.0
+		trail_timer = 0.0
+	
+	# 着地時のパーティクル処理（状態遷移の前に実行）
+	if state == State.JUMP and is_on_floor():
+		print("JUMP STATE AND ON FLOOR - PROCESSING PARTICLES")
+		var fall_distance = abs(position.y - fall_start_y)
+		print("FALL START Y: ", fall_start_y)
+		print("CURRENT Y: ", position.y)
+		print("FALL DISTANCE: ", fall_distance)
+		
+		var dust_particles = $Dust.process_material as ParticleProcessMaterial
+		
+		if fall_distance > min_fall_height:
+			print("FALL DISTANCE OVER THRESHOLD ----------------------")
+			# 落下距離に応じてパーティクルを派手に
+			var base_scale = 1.0
+			var max_scale = 2.5  # 最大スケールを1.8倍に変更
+			var min_distance = 130.0
+			var max_distance = 600.0
+			
+			# 落下距離に応じたスケール係数を計算（130-400の範囲で1.0-1.8に正規化）
+			var normalized_distance = clamp((fall_distance - min_distance) / (max_distance - min_distance), 0.0, 1.0)
+			var scale_factor = base_scale + (max_scale - base_scale) * normalized_distance
+			
+			dust_particles.spread = 64.0  # 広がり角度は固定
+			dust_particles.emission_box_extents = Vector3(1.0, scale_factor * 10.0, 1.0)  # 発生範囲を大きく（最大y:18.0）
+			$Dust.amount = int(20 * scale_factor * 1.2)  # パーティクルの量を1.2倍に
+			print("DUST AMOUNT --------------------: ", $Dust.amount)
+			print("SCALE FACTOR --------------------: ", scale_factor)
+		else:
+			print("FALL DISTANCE UNDER THRESHOLD")
+			# 通常のパーティクル設定
+			dust_particles.spread = 64.0  # 通常の広がり角度
+			dust_particles.emission_box_extents = Vector3(1.0, 6.0, 1.0)  # 通常の発生範囲
+			$Dust.amount = 20
+		
+		$Dust.emitting = true
+		is_falling = false  # 着地時に落下フラグをリセット
+
+	# 着地時の状態遷移
+	if state == State.JUMP and is_on_floor():
+		print("LANDING DETECTED - STATE: ", state, " ON FLOOR: ", is_on_floor())
+		# 移動入力がある場合
+		if Input.is_action_pressed("right") or Input.is_action_pressed("left"):
+			if Input.is_action_pressed("dash"):
+				change_state(State.DASH)
+			else:
+				change_state(State.WALK)
+		else:
+			change_state(State.IDLE)
+	
 	get_input(delta)
 	
 	# ダッシュの残像エフェクト処理
@@ -92,22 +206,29 @@ func _physics_process(delta: float) -> void:
 
 	if is_on_floor():
 		# 地上での処理
-		if not $DashTrail.emitting:
+		if not is_trail_active:
 			# 残像が出ていない状態で、ダッシュボタンを押していて、速度が閾値を超えたら開始
 			if dash and speed > dash_trail_ground_start_speed:
-				$DashTrail.emitting = true
-				update_particle_direction()
+				set_trail_active(true)
 		else:
 			# 残像が出ている状態で、速度が閾値以下になったら終了（ダッシュボタンの状態は関係なし）
 			if speed < dash_trail_ground_end_speed:
-				$DashTrail.emitting = false
+				set_trail_active(false)
 	else:
 		# 空中での処理（変更なし）
-		if not $DashTrail.emitting and speed > dash_trail_air_speed:
-			$DashTrail.emitting = true
-			update_particle_direction()
-		elif $DashTrail.emitting and speed < dash_trail_air_end_speed:
-			$DashTrail.emitting = false
+		if not is_trail_active and speed > dash_trail_air_speed:
+			set_trail_active(true)
+		elif is_trail_active and speed < dash_trail_air_end_speed:
+			set_trail_active(false)
+
+	# 残像の生成間隔を制御
+	if is_trail_active:
+		trail_timer += delta
+		var speed_factor = velocity.length() / dash_speed
+		var interval = lerp(0.005, 0.01, speed_factor)  # より短い間隔に
+		if trail_timer >= interval:
+			create_trail_sprite()
+			trail_timer = 0.0
 
 	# ジャンプ下降時のアニメーション
 	if state == State.JUMP and velocity.y > 0:
@@ -139,17 +260,6 @@ func _physics_process(delta: float) -> void:
 			# Slide down if the angle is greater than 30 degrees
 			velocity.x += normal.x * gravity * delta * 2  # Increase the multiplier for faster sliding
 
-	if state == State.JUMP and is_on_floor():
-		$Dust.emitting = true  # パーティクル処理を先に実行
-		# 移動入力がある場合
-		if Input.is_action_pressed("right") or Input.is_action_pressed("left"):
-			if Input.is_action_pressed("dash"):
-				change_state(State.DASH)
-			else:
-				change_state(State.WALK)
-		else:
-			change_state(State.IDLE)
-
 	if position.y > 1000:
 		change_state(State.DEAD)
 
@@ -159,9 +269,6 @@ func _physics_process(delta: float) -> void:
 		coyote_time = true
 		jump_count = 0
 		
-		# 速度に基づく残像処理は、DASH状態の時のみ行う
-		if state == State.DASH and abs(velocity.x) > dash_speed:
-			$DashTrail.emitting = true
 	else:
 		bounce_timer = max(0, bounce_timer - delta)
 		if !$CoyoteTimer.is_stopped():
@@ -269,12 +376,14 @@ func get_input(delta: float):
 			coyote_time = false
 			$CoyoteTimer.stop()
 			jump_count += 1
+			fall_start_y = position.y  # ジャンプ開始時に落下開始位置を記録
 				
 		elif !is_on_floor() and !coyote_time and jump_count < max_jumps:
 			AudioManager.play_se("HIGH_JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed / 1.5
 			jump_count += 1
+			fall_start_y = position.y  # 二段ジャンプ時も落下開始位置を記録
 
 		elif is_on_wall():
 			AudioManager.play_se("JUMP")
@@ -282,6 +391,7 @@ func get_input(delta: float):
 			velocity.y = jump_speed
 			velocity.x = -target_velocity_x
 			jump_count += 1
+			fall_start_y = position.y  # 壁ジャンプ時も落下開始位置を記録
 
 	if state in [State.IDLE, State.CROUCH] and velocity.x != 0:
 		change_state(State.WALK)
@@ -318,3 +428,75 @@ func update_particle_direction():
 		$DashTrail.position.x = -14  # 左を向いているとき
 		# $DashTrail.rotation_degrees = -180
 		$DashTrail.skew = -18.5
+
+
+func create_trail_sprite() -> void:
+	var trail_sprite = Sprite2D.new()
+	get_tree().root.add_child(trail_sprite)
+	
+	var initial_position = $Sprite2D.global_position
+	
+	var current_frame = $Sprite2D.frame
+	var current_hframes = $Sprite2D.hframes
+	
+	trail_sprite.texture = $Sprite2D.texture
+	trail_sprite.hframes = current_hframes
+	trail_sprite.frame = current_frame
+	trail_sprite.flip_h = $Sprite2D.flip_h
+	
+	# シェーダーを適用
+	var shader = load("res://shaders/trail.gdshader")
+	var shader_material = ShaderMaterial.new()
+	shader_material.shader = shader
+	shader_material.set_shader_parameter("color", Color(0.0, 0.9, 1.0, 0.1))  # 水色に変更
+	trail_sprite.material = shader_material
+	
+	trail_sprite.global_position = initial_position
+	
+	# 透明度の変化を速く（0.2秒）
+	var tween = create_tween()
+	tween.tween_property(shader_material, "shader_parameter/color:a", 0.0, 0.12)
+	
+	# 0.2秒後にスプライトを削除
+	await get_tree().create_timer(0.12).timeout
+	trail_sprite.queue_free()
+
+func set_trail_active(active: bool) -> void:
+	if is_trail_active != active:  # 状態が変わったときだけ処理
+		is_trail_active = active
+		if active:  # 残像を開始するときだけタイマーをリセット
+			trail_timer = 0.0
+	# $DashTrail.emitting = active
+	# update_particle_direction()
+
+func create_fall_trail() -> void:
+	var trail = Sprite2D.new()
+	get_tree().root.add_child(trail)
+	
+	# 残像の設定
+	trail.texture = $Sprite2D.texture
+	trail.hframes = $Sprite2D.hframes
+	trail.frame = $Sprite2D.frame
+	trail.flip_h = $Sprite2D.flip_h
+	trail.scale = Vector2(0.8, 0.8)  # 少し小さく
+	
+	# シェーダーマテリアルの適用
+	var shader = load("res://shaders/fall_trail.gdshader")
+	var shader_material = ShaderMaterial.new()
+	shader_material.shader = shader
+	shader_material.set_shader_parameter("color", Color(0.0, 0.8, 1.0, 0.3))  # 透明度を下げる
+	trail.material = shader_material
+	
+	trail.global_position = $Sprite2D.global_position
+	trail_sprites.append(trail)
+	
+	# フェードアウト
+	var tween = create_tween()
+	tween.tween_property(shader_material, "shader_parameter/color:a", 0.0, 0.15)  # 時間を短く
+	tween.tween_callback(trail.queue_free)
+	tween.tween_callback(func(): trail_sprites.erase(trail))
+
+# fall_start_yを設定するメソッド
+func set_fall_start_y(y: float) -> void:
+	fall_start_y = y
+	print("FALL START Y SET TO: ", fall_start_y)

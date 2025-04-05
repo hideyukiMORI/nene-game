@@ -13,8 +13,8 @@ var bgm_position: float = 0.0
 
 # 音響ファイルのパスを保持
 var bgm_paths = {
-	"STAGE_01": "res://assets/audio/bgm/stage_01.wav",
-	"CAVE_01": "res://assets/audio/bgm/cave_01.wav"
+	"STAGE_01": "res://assets/audio/bgm/stage_01.mp3",
+	"CAVE_01": "res://assets/audio/bgm/cave_01.mp3"
 }
 
 var se_paths = {
@@ -41,6 +41,7 @@ func play_bgm(bgm_key: String) -> void:
 		var stream = load(bgm_paths[bgm_key])
 		if stream:
 			bgm_player.stop()
+			stream.loop = true
 			bgm_player.stream = stream
 			bgm_player.volume_db = linear_to_db(bgm_volume)
 			bgm_player.play()

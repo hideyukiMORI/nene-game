@@ -66,6 +66,9 @@ func _warp_same_scene(body: Node2D) -> void:
 	# トランジション付きのワープ
 	var warp_callback = func():
 		body.global_position = target_marker.global_position
+		# ワープ先の位置をfall_start_yに設定
+		if body.has_method("set_fall_start_y"):
+			body.set_fall_start_y(target_marker.global_position.y)
 	
 	# トランジションタイプに応じて適切なトランジションを実行
 	match transition_type:
