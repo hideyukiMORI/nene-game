@@ -393,6 +393,7 @@ func _next_language() -> void:
 	var next_index = (current_index + 1) % option_button.item_count
 	option_button.selected = next_index
 	AudioManager.play_se("CURSOR")
+	_on_language_changed(next_index)  # 言語変更イベントを発火
 	_save_settings()
 
 func _prev_language() -> void:
@@ -404,6 +405,7 @@ func _prev_language() -> void:
 	var prev_index = (current_index - 1 + option_button.item_count) % option_button.item_count
 	option_button.selected = prev_index
 	AudioManager.play_se("CURSOR")
+	_on_language_changed(prev_index)  # 言語変更イベントを発火
 	_save_settings()
 
 func _save_settings() -> void:
@@ -443,9 +445,13 @@ func _load_settings() -> void:
 			print("Warning: Language index out of range, resetting to English")
 			language_index = 0
 		button_language.selected = language_index
+		# DialogueManagerの言語設定も更新
+		var language = "en" if language_index == 0 else "ja"
+		DialogueManager.set_language(language)
 	else:
 		print("Error: Failed to load settings.cfg")
 		button_language.selected = 0  # デフォルトでEnglishに設定
+		DialogueManager.set_language("en")  # デフォルトで英語に設定
 
 func _check_config_file() -> void:
 	"""
@@ -467,7 +473,11 @@ func _check_config_file() -> void:
 
 func _on_language_changed(_index: int) -> void:
 	"""
-	言語が変更されたときの処理
+	言語設定が変更されたときのイベントを処理します。
+	:param _index: 選択された言語のインデックス。
 	"""
 	AudioManager.play_se("CURSOR")
 	_save_settings()
+	# DialogueManagerの言語設定も更新
+	var language = "en" if _index == 0 else "ja"
+	DialogueManager.set_language(language)

@@ -1,0 +1,78 @@
+{
+  "first_meet": {
+    "initial_state": {
+      "background": "forest_evening",
+      "bgm": "mysterious_encounter",
+      "characters": {
+        "??????": {
+          "name_color": "#FF9ECD",
+          "text_color": "#FFFFFF",
+          "scene_path": "res://scenes/characters/cat_sith.tscn",
+          "animations": {
+            "normal": "idle",
+            "smile": "happy",
+            "angry": "angry"
+          },
+          "text_speed": 0.04
+        },
+        "キャット・シー": {
+          "name_color": "#FF9ECD",
+          "text_color": "#FFFFFF",
+          "scene_path": "res://scenes/characters/cat_sith.tscn",
+          "animations": {
+            "normal": "idle",
+            "smile": "happy",
+            "angry": "angry"
+          },
+          "text_speed": 0.04
+        },
+        "ねね": {
+          "name_color": "#7DFFB2",
+          "text_color": "#FFFFFF",
+          "scene_path": "res://scenes/characters/nene.tscn",
+          "animations": {
+            "normal": "idle",
+            "surprised": "surprised",
+            "happy": "happy"
+          },
+          "text_speed": 0.05
+        }
+      },
+      "portraits": [
+        {
+          "character": "キャット・シー",
+          "animation": "normal",
+          "position": "right"
+        },
+        {
+          "character": "ねね",
+          "animation": "normal",
+          "position": "left"
+        }
+      ]
+    },
+    "pages": [
+      {
+        "speaker": "??????",
+        "text": "ふふふ... これはこれは。\n私の縄張りに迷い込んだのは、小さな魔女さんかにゃ？",
+        "animation": "normal",
+        "text_speed": 0.03
+      },
+      {
+        "speaker": "ねね",
+        "text": "[shake rate=5 level=15]わっ！[/shake] しゃ、喋るねこ！？",
+        "animation": "surprised"
+      },
+      {
+        "speaker": "キャット・シー",
+        "text": "[rainbow freq=0.5]ただの猫じゃないにゃ、...[/rainbow]\n[wave amp=30 freq=3]私はキャット・シー、猫妖精だにゃ[/wave]",
+        "animation": "smile"
+      },
+      {
+        "speaker": "ねね",
+        "text": "あ！魔法の本で読んだことがある！",
+        "animation": "happy"
+      }
+    ]
+  }
+} 
