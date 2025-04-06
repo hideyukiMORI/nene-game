@@ -21,14 +21,23 @@ var fonts = {
 	"ja": "res://assets/fonts/PixelMplus12-Regular.ttf"
 }
 
-func _ready():
+func _ready() -> void:
+	"""
+	DialogueManagerを初期化します。
+	"""
+	# GameStateの言語設定を反映
+	current_language = GameState.current_language
+	print("DialogueManager initialized with language: ", current_language)
+	
+	# シグナルを接続
+	GameState.language_changed.connect(_on_language_changed)
+	
 	# 初期化処理
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	# UIレイヤーを作成
 	canvas_layer = CanvasLayer.new()
 	canvas_layer.layer = 2  # HUDより手前に表示
 	add_child(canvas_layer)
-	print("DialogueManager initialized with language: ", current_language)
 
 func start_dialogue(target: String, dialogue_id: String, page_id: String) -> void:
 	if is_dialogue_open:
@@ -126,3 +135,17 @@ func set_language(language: String) -> void:
 	print("Setting language from ", current_language, " to ", language)
 	current_language = language
 	print("Dialogue language set to: ", current_language)
+
+func _set_font_for_language(language: String) -> void:
+	var rich_text_label = current_dialogue.get_node("NinePatchRect/RichTextLabel")
+	if rich_text_label:
+		print("Setting font for language: ", language)
+		var font = load(fonts[language])
+		if font:
+			rich_text_label.add_theme_font_override("normal_font", font)
+			print("Font loaded and set successfully")
+		else:
+			print("Failed to load font: ", fonts[language])
+
+func _on_language_changed(new_language: String) -> void:
+	set_language(new_language)

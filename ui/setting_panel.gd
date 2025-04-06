@@ -37,7 +37,9 @@ func _ready() -> void:
 	設定パネルを初期化し、パネルの可視性を設定し、シグナルを接続し、
 	メニュー選択を更新します。
 	"""
-	_load_settings()
+	# デフォルトで英語に設定
+	button_language.selected = 0
+	_load_settings()  # 最初に設定を読み込む
 	_initialize_panel()
 	_connect_signals()
 	_update_menu_selection()
@@ -412,19 +414,36 @@ func _save_settings() -> void:
 	"""
 	現在の設定を保存します。
 	"""
+	print("\n=== 設定の保存 ===")
+	print("現在の言語インデックス: ", button_language.selected)
+	print("現在のGameState言語: ", GameState.current_language)
+	
 	var config = ConfigFile.new()
 	config.set_value("audio", "sound_enabled", AudioManager.sound_enabled)
 	config.set_value("audio", "bgm_volume", AudioManager.bgm_volume)
 	config.set_value("audio", "se_volume", AudioManager.se_volume)
 	config.set_value("display", "fullscreen", DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN)
-	config.set_value("language", "current", $Panel/ScrollContainer/SettingList/Language/OptionButton.selected)
-	config.save("user://settings.cfg")
-	print("Settings saved successfully")
+	
+	# 言語設定の保存を修正
+	# GameStateの言語設定を優先して保存
+	config.set_value("language", "current", GameState.current_language)
+	
+	var err = config.save("user://settings.cfg")
+	if err == OK:
+		print("設定を保存しました")
+		print("保存した言語: ", GameState.current_language)
+	else:
+		print("設定の保存に失敗しました: ", err)
+	print("=== 設定の保存終了 ===\n")
 
 func _load_settings() -> void:
 	"""
 	保存されたオーディオ設定とフルスクリーン設定を読み込みます。
 	"""
+	print("\n=== 設定の読み込み ===")
+	print("読み込み前の言語インデックス: ", button_language.selected)
+	print("読み込み前のGameState言語: ", GameState.current_language)
+	
 	var config = ConfigFile.new()
 	var err = config.load("user://settings.cfg")
 	if err == OK:
@@ -440,18 +459,59 @@ func _load_settings() -> void:
 		AudioManager.toggle_sound(sound_enabled)
 		var fullscreen = config.get_value("display", "fullscreen", false)
 		_set_fullscreen_mode(fullscreen)
-		var language_index = config.get_value("language", "current", 0)
-		if language_index < 0 or language_index >= button_language.item_count:
-			print("Warning: Language index out of range, resetting to English")
-			language_index = 0
-		button_language.selected = language_index
-		# DialogueManagerの言語設定も更新
-		var language = "en" if language_index == 0 else "ja"
-		DialogueManager.set_language(language)
+		
+		# 言語設定の読み込みを修正
+		var language_value = config.get_value("language", "current", GameState.current_language)
+		print("設定ファイルから読み込んだ言語値: ", language_value)
+		print("言語値の型: ", typeof(language_value))
+		
+		# 型を確認して適切に変換
+		var language: String
+		if language_value is int:
+			print("言語値がint型です")
+			# int型の場合はインデックスとして扱う
+			language = "en" if language_value == 0 else "ja"
+			print("変換後の言語: ", language)
+		elif language_value is String:
+			print("言語値がString型です")
+			# String型の場合はそのまま使用
+			language = language_value
+			print("そのまま使用する言語: ", language)
+		else:
+			print("言語値が予期しない型です: ", typeof(language_value))
+			# その他の型の場合は現在の言語設定を維持
+			language = GameState.current_language
+			print("現在の言語を維持: ", language)
+		
+		# 有効な言語かチェック
+		if not (language == "en" or language == "ja"):
+			print("無効な言語値です: ", language)
+			# 無効な値の場合は現在の言語設定を維持
+			language = GameState.current_language
+			print("現在の言語を維持: ", language)
+		
+		# 言語が変更された場合のみ更新
+		if language != GameState.current_language:
+			print("言語が変更されました: ", GameState.current_language, " -> ", language)
+			GameState.set_language(language)
+		else:
+			print("言語は変更されていません: ", language)
+		
+		# UIの更新（言語設定に関係なく常に更新）
+		var new_selected = 0 if language == "en" else 1
+		print("UI更新前の選択: ", button_language.selected)
+		print("UI更新後の選択: ", new_selected)
+		button_language.selected = new_selected
 	else:
 		print("Error: Failed to load settings.cfg")
-		button_language.selected = 0  # デフォルトでEnglishに設定
-		DialogueManager.set_language("en")  # デフォルトで英語に設定
+		# デフォルト設定を維持
+		print("デフォルト設定を維持します: ", button_language.selected)
+		button_language.selected = 0
+		GameState.set_language("en")
+	
+	print("読み込み後の言語インデックス: ", button_language.selected)
+	print("読み込み後のGameState言語: ", GameState.current_language)
+	print("=== 設定の読み込み終了 ===\n")
 
 func _check_config_file() -> void:
 	"""
@@ -478,6 +538,6 @@ func _on_language_changed(_index: int) -> void:
 	"""
 	AudioManager.play_se("CURSOR")
 	_save_settings()
-	# DialogueManagerの言語設定も更新
+	# GameStateの言語設定を更新
 	var language = "en" if _index == 0 else "ja"
-	DialogueManager.set_language(language)
+	GameState.set_language(language)
