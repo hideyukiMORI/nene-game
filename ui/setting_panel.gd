@@ -10,6 +10,7 @@ extends Control
 @onready var volume_slider_se = $Panel/ScrollContainer/SettingList/SE/VolumeSlider
 @onready var button_fullscreen_on = $Panel/ScrollContainer/SettingList/Fullscreen/OnButton
 @onready var button_fullscreen_off = $Panel/ScrollContainer/SettingList/Fullscreen/OffButton
+@onready var button_language = $Panel/ScrollContainer/SettingList/Language/OptionButton
 @onready var button_close = $Panel/ScrollContainer/SettingList/Exit/CloseButton
 @onready var icon_close = $Panel/CloseIcon
 
@@ -23,6 +24,7 @@ var is_paused = false
 	$Panel/ScrollContainer/SettingList/BGM/Label,
 	$Panel/ScrollContainer/SettingList/SE/Label,
 	$Panel/ScrollContainer/SettingList/Fullscreen/Label,
+	$Panel/ScrollContainer/SettingList/Language/Label,
 	$Panel/ScrollContainer/SettingList/Exit/Label
 ]
 
@@ -74,6 +76,7 @@ func _connect_signals() -> void:
 	button_fullscreen_off.connect("pressed", Callable(self, "_on_fullscreen_off_pressed"))
 	button_close.connect("pressed", Callable(self, "_toggle_settings_panel_visibility"))
 	icon_close.connect("pressed", Callable(self, "_toggle_settings_panel_visibility"))
+	button_language.item_selected.connect(_on_language_changed)
 
 func _update_button_states() -> void:
 	"""
@@ -217,9 +220,48 @@ func _change_selection(direction: int) -> void:
 	方向に基づいて現在のメニュー選択を変更します。
 	:param direction: 選択を変更する方向（1は下、-1は上）。
 	"""
+	print("\n=== 選択変更 ===")
+	print("現在の選択: ", current_selection)
+	print("変更方向: ", direction)
+	
 	current_selection = (current_selection + direction + menu_labels.size()) % menu_labels.size()
+	print("新しい選択: ", current_selection)
+	
 	_update_menu_selection()
+	_ensure_visible(current_selection)
 	AudioManager.play_se("CURSOR")
+	
+	print("=== 選択変更終了 ===\n")
+
+func _ensure_visible(index: int) -> void:
+	if index < 0 or index >= menu_labels.size():
+		return
+		
+	var item = menu_labels[index]
+	var scroll_container = $Panel/ScrollContainer
+	
+	# アイテムの位置を取得
+	var item_global_pos = item.get_global_position()
+	var container_global_pos = scroll_container.get_global_position()
+	var item_local_pos = item_global_pos - container_global_pos
+	
+	print("選択アイテム: ", index)
+	print("アイテムの位置: ", item_local_pos)
+	print("ビューポートサイズ: ", scroll_container.size)
+	print("現在のスクロール位置: ", scroll_container.scroll_vertical)
+	
+	# アイテムをビューポートの中央に配置
+	var viewport_center = scroll_container.size.y / 2
+	var item_center = item_local_pos.y + item.size.y / 2
+	var target_scroll = item_center - viewport_center
+	
+	print("ターゲットスクロール位置: ", target_scroll)
+	
+	# スムーズなスクロールアニメーション
+	var tween = create_tween()
+	tween.tween_property(scroll_container, "scroll_vertical", target_scroll, 0.2)\
+		.set_ease(Tween.EASE_OUT)\
+		.set_trans(Tween.TRANS_QUAD)
 
 func _toggle_settings_panel_visibility() -> void:
 	"""
@@ -313,7 +355,8 @@ func _handle_right_action() -> void:
 		1: _change_volume(volume_slider_bgm, VOLUME_STEP)
 		2: _change_volume(volume_slider_se, VOLUME_STEP)
 		3: _set_fullscreen_mode(true)
-		4: _toggle_settings_panel_visibility()
+		4: _next_language()
+		5: _toggle_settings_panel_visibility()
 
 func _handle_left_action() -> void:
 	"""
@@ -329,7 +372,8 @@ func _handle_left_action() -> void:
 		1: _change_volume(volume_slider_bgm, -VOLUME_STEP)
 		2: _change_volume(volume_slider_se, -VOLUME_STEP)
 		3: _set_fullscreen_mode(false)
-		4: _toggle_settings_panel_visibility()
+		4: _prev_language()
+		5: _toggle_settings_panel_visibility()
 
 func _change_volume(slider: Slider, step: int) -> void:
 	"""
@@ -340,20 +384,40 @@ func _change_volume(slider: Slider, step: int) -> void:
 	slider.value = clamp(slider.value + step, MIN_VOLUME, MAX_VOLUME)
 	slider.release_focus()
 
+func _next_language() -> void:
+	"""
+	次の言語を選択します。
+	"""
+	var option_button = $Panel/ScrollContainer/SettingList/Language/OptionButton
+	var current_index = option_button.selected
+	var next_index = (current_index + 1) % option_button.item_count
+	option_button.selected = next_index
+	AudioManager.play_se("CURSOR")
+	_save_settings()
+
+func _prev_language() -> void:
+	"""
+	前の言語を選択します。
+	"""
+	var option_button = $Panel/ScrollContainer/SettingList/Language/OptionButton
+	var current_index = option_button.selected
+	var prev_index = (current_index - 1 + option_button.item_count) % option_button.item_count
+	option_button.selected = prev_index
+	AudioManager.play_se("CURSOR")
+	_save_settings()
+
 func _save_settings() -> void:
 	"""
-	現在のオーディオ設定とフルスクリーン設定をファイルに保存します。
+	現在の設定を保存します。
 	"""
 	var config = ConfigFile.new()
+	config.set_value("audio", "sound_enabled", AudioManager.sound_enabled)
 	config.set_value("audio", "bgm_volume", AudioManager.bgm_volume)
 	config.set_value("audio", "se_volume", AudioManager.se_volume)
-	config.set_value("audio", "sound_enabled", AudioManager.sound_enabled)
 	config.set_value("display", "fullscreen", DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN)
-	var err = config.save("user://settings.cfg")
-	if err == OK:
-		print("Settings saved successfully")
-	else:
-		print("Failed to save settings")
+	config.set_value("language", "current", $Panel/ScrollContainer/SettingList/Language/OptionButton.selected)
+	config.save("user://settings.cfg")
+	print("Settings saved successfully")
 
 func _load_settings() -> void:
 	"""
@@ -374,8 +438,14 @@ func _load_settings() -> void:
 		AudioManager.toggle_sound(sound_enabled)
 		var fullscreen = config.get_value("display", "fullscreen", false)
 		_set_fullscreen_mode(fullscreen)
+		var language_index = config.get_value("language", "current", 0)
+		if language_index < 0 or language_index >= button_language.item_count:
+			print("Warning: Language index out of range, resetting to English")
+			language_index = 0
+		button_language.selected = language_index
 	else:
 		print("Error: Failed to load settings.cfg")
+		button_language.selected = 0  # デフォルトでEnglishに設定
 
 func _check_config_file() -> void:
 	"""
@@ -391,5 +461,13 @@ func _check_config_file() -> void:
 		print("SE Volume: ", config.get_value("audio", "se_volume", 1.0))
 		print("Sound Enabled: ", config.get_value("audio", "sound_enabled", true))
 		print("Fullscreen: ", config.get_value("display", "fullscreen", false))
+		print("Language: ", config.get_value("language", "current", 0))
 	else:
 		print("Failed to load settings.cfg")
+
+func _on_language_changed(_index: int) -> void:
+	"""
+	言語が変更されたときの処理
+	"""
+	AudioManager.play_se("CURSOR")
+	_save_settings()
