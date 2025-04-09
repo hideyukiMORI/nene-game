@@ -113,13 +113,11 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var objects = get_parent().get_node("Objects")
-	# 梯子の判定は上ボタンが押された時とCLIMB状態の時のみ行う
-	if (Input.is_action_just_pressed("climb") or state == State.CLIMB or state == State.CLIMB_IDLE) and objects:
+	# 梯子の判定は常時行う
+	if objects:
 		# プレイヤーの判定位置を調整（より広い範囲で判定）
 		var player_top = position + Vector2(0, -16)  # 上部の判定位置
 		var player_bottom = position + Vector2(0, 0)  # 下部の判定位置
-		print("PLAYER TOP: ", player_top)
-		print("PLAYER BOTTOM: ", player_bottom)
 		is_on_ladder = check_ladder_tile(objects, player_top) or check_ladder_tile(objects, player_bottom)
 	else:
 		is_on_ladder = false
@@ -354,6 +352,11 @@ func get_input(delta: float):
 	else:
 		collision_mask |= (1 << 6)   # レイヤー7（Objects）を有効化
 
+	# 梯子の判定
+	if is_on_ladder and state != State.CLIMB and state != State.CLIMB_IDLE:
+		if climb or down:
+			change_state(State.CLIMB)
+
 	var target_velocity_x = 0
 	if state == State.CLIMB or state == State.CLIMB_IDLE:
 		# 梯子の時の左右移動はclimb_speedに制限
@@ -441,6 +444,8 @@ func get_input(delta: float):
 		change_state(State.IDLE)
 	if down and is_on_floor():
 		change_state(State.CROUCH)
+	elif (down or climb) and is_on_ladder:
+		change_state(State.CLIMB)
 	if !down and state == State.CROUCH:
 		change_state(State.IDLE)
 
