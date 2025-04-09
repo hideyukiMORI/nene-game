@@ -348,6 +348,12 @@ func get_input(delta: float):
 	var climb = Input.is_action_pressed("climb")
 	var dash = Input.is_action_pressed("dash")
 
+	# Objectsレイヤーのコリジョンを制御
+	if down:
+		collision_mask &= ~(1 << 6)  # レイヤー7（Objects）を無効化
+	else:
+		collision_mask |= (1 << 6)   # レイヤー7（Objects）を有効化
+
 	var target_velocity_x = 0
 	if state == State.CLIMB or state == State.CLIMB_IDLE:
 		# 梯子の時の左右移動はclimb_speedに制限

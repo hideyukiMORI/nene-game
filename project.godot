@@ -98,8 +98,9 @@ dash={
 2d_render/layer_2="World"
 2d_render/layer_3="Items"
 2d_render/layer_4="Enemys"
-2d_render/layer_5="npc"
-2d_render/layer_6="ui"
+2d_render/layer_5="NPC"
+2d_render/layer_6="UI"
+2d_render/layer_7="Object"
 2d_physics/layer_1="Player"
 2d_navigation/layer_1="Player"
 2d_physics/layer_2="World"
@@ -108,10 +109,12 @@ dash={
 2d_navigation/layer_3="Items"
 2d_physics/layer_4="Enemys"
 2d_navigation/layer_4="Enemys"
-2d_physics/layer_5="npc"
-2d_navigation/layer_5="npc"
-2d_physics/layer_6="ui"
-2d_navigation/layer_6="ui"
+2d_physics/layer_5="NPC"
+2d_navigation/layer_5="NPC"
+2d_physics/layer_6="UI"
+2d_navigation/layer_6="UI"
+2d_physics/layer_7="Object"
+2d_navigation/layer_7="Object"
 
 [rendering]
 
