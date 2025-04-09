@@ -54,18 +54,18 @@
     "pages": [
       {
         "speaker": "??????",
-        "text": "ふふふ... これはこれは。\n私の縄張りに迷い込んだのは、小さな魔女さんかにゃ？",
+        "text": "にゃにゃっ...！\nアタイの縄張りに迷い込んだのは、魔女っ子かにゃ？",
         "animation": "normal",
         "text_speed": 0.03
       },
       {
         "speaker": "ねね",
-        "text": "[shake rate=5 level=15]わっ！[/shake] しゃ、喋るねこ！？",
+        "text": "[shake rate=5 level=15]わぁっ！[/shake] しゃ、喋るねこ！？",
         "animation": "surprised"
       },
       {
         "speaker": "キャット・シー",
-        "text": "[rainbow freq=0.5]ただの猫じゃないにゃ、...[/rainbow]\n[wave amp=30 freq=3]私はキャット・シー、猫妖精だにゃ[/wave]",
+        "text": "[rainbow freq=0.5]ただの猫じゃないにゃ、...[/rainbow]\n[wave amp=30 freq=3]アタイはキャット・シー、猫妖精だにゃ[/wave]",
         "animation": "smile"
       },
       {
