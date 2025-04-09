@@ -8,7 +8,7 @@ extends CharacterBody2D
 @export var dash_trail_air_end_speed: int = 300
 @export var jump_speed: int = -500
 @export var gravity: int = 1000
-@export var climb_speed: int = 80
+@export var climb_speed: int = 100
 @export var acceleration: int = 800
 @export var air_acceleration: int = 5500
 @export var max_jumps: int = 2
@@ -624,7 +624,7 @@ func check_ladder_tile(tilemap: TileMapLayer, pos: Vector2) -> bool:
 	# プレイヤーの中心とサイズを計算
 	var player_center = pos + Vector2(-2, 0)  # 判定幅に合わせて左にずらす
 	var player_half_width = 12.0  # 判定を少し広く（28ピクセル）
-	var player_half_height = 16.0  # 判定を少し狭く（32ピクセル）
+	var player_half_height = 24.0  # 判定を少し狭く（32ピクセル）
 	
 	# プレイヤーの周囲のタイルを検索
 	var start_tile = tilemap.local_to_map(player_center - Vector2(player_half_width, player_half_height))
