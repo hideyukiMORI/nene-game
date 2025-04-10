@@ -22,6 +22,7 @@ AudioManager="*res://autoload/audio_manager.gd"
 GameState="*res://autoload/game_state.gd"
 DialogueManager="*res://autoload/dialogue_manager.gd"
 TransitionManager="*res://transition/transition_manager.tscn"
+PlayerStats="*res://autoload/player_stats.gd"
 
 [display]
 

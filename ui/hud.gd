@@ -14,7 +14,10 @@ func _ready() -> void:
 	# メッセージを非表示に
 	hide_message()
 	# 体力値を更新
-	update_health(80)
+	update_health_display()
+	# グローバルな体力変更シグナルを接続
+	PlayerStats.health_changed.connect(_on_health_changed)
+	PlayerStats.max_health_changed.connect(_on_max_health_changed)
 
 func _process(_delta: float) -> void:
 	var memory_usage = int(OS.get_static_memory_usage() / 1024.0 / 1024.0)  # Convert to MB
@@ -34,9 +37,16 @@ func hide_message() -> void:
 	message_label.hide()
 	mask.visible = false
 
-func update_health(value: float) -> void:
-	health_bar.value = value
-	health_label.text = "%d / 100" % value
+func update_health_display() -> void:
+	health_bar.max_value = PlayerStats.get_max_health()
+	health_bar.value = PlayerStats.get_health()
+	health_label.text = "%d / %d" % [PlayerStats.get_health(), PlayerStats.get_max_health()]
+
+func _on_health_changed(_current: float, _max: float) -> void:
+	update_health_display()
+
+func _on_max_health_changed(_new_max: float) -> void:
+	update_health_display()
 
 func get_health() -> float:
 	return health_bar.value
