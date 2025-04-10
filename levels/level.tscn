@@ -45,7 +45,7 @@ process_mode = 1
 
 [node name="Items" type="TileMapLayer" parent="."]
 
-[node name="Danger" type="TileMapLayer" parent="."]
+[node name="Hazards" type="TileMapLayer" parent="."]
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
@@ -61,7 +61,7 @@ process_mode = 1
 process_mode = 1
 z_index = 1
 
-[node name="Front" type="TileMapLayer" parent="."]
+[node name="Foregrounds" type="TileMapLayer" parent="."]
 process_mode = 1
 z_index = 1
 
