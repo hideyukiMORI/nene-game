@@ -437,7 +437,7 @@ func get_input(delta: float):
 	if is_on_floor():
 		for idx in range(get_slide_collision_count()):
 			var collision = get_slide_collision(idx)
-			if collision.get_collider().name == 'Danger':
+			if collision.get_collider().name == 'Hazards':
 				hurt()
 			# print("COLLISION :: ", collision.get_collider().name)
 			if collision.get_collider().is_in_group('enemies'):

@@ -1,11 +1,10 @@
-[gd_scene load_steps=7 format=4 uid="uid://ct1perpiauar8"]
+[gd_scene load_steps=6 format=4 uid="uid://ct1perpiauar8"]
 
 [ext_resource type="PackedScene" uid="uid://pbts02r4gl31" path="res://levels/level.tscn" id="1_u8fks"]
 [ext_resource type="PackedScene" uid="uid://co4qnqmvx1qkc" path="res://objects/warp_point.tscn" id="2_6kny5"]
 [ext_resource type="TileSet" uid="uid://c2e6xntqwe7fc" path="res://assets/tile_set/beach.tres" id="2_11n3o"]
 [ext_resource type="TileSet" uid="uid://b3xb1rsvpuh16" path="res://assets/tile_set/objects.tres" id="3_0y7w7"]
 [ext_resource type="TileSet" uid="uid://bdb5164exifvc" path="res://assets/tile_set/items.tres" id="3_eta1p"]
-[ext_resource type="TileSet" uid="uid://c5me6hjw5by7b" path="res://assets/tile_set/flowers_animation.tres" id="5_qh36v"]
 
 [node name="CaveEntrance" instance=ExtResource("1_u8fks")]
 bgm = 1
@@ -24,9 +23,6 @@ metadata/is_climbable = false
 tile_map_data = PackedByteArray("AABRABsAAQAAAAAAAABTABsAAQAAAAAAAABVABsAAQAAAAAAAABXABsAAQAAAAAAAABZABsAAQAAAAAAAABbABsAAQAAAAAAAABdABsAAQAAAAAAAAAFABsAAQAAAAAAAAALABgAAQAAAAAAAAAUABMAAQAAAAAAAAAaABsAAQAAAAAAAAARAB4AAQAAAAAAAAAKAA8AAQAAAAAAAAACABIAAQAAAAAAAAASABUAAQAAAAAAAAAXAB8AAQAAAAAAAAApAB8AAQAAAAAAAAAoACcAAQAAAAAAAAA=")
 tile_set = ExtResource("3_eta1p")
 
-[node name="Danger" parent="." index="4"]
-tile_set = ExtResource("3_eta1p")
-
 [node name="PlayerSpawn" parent="SpawnPoints" index="0"]
 position = Vector2(110, 88)
 
@@ -36,10 +32,6 @@ warp_type = 1
 target_scene_name = "level_01"
 spawn_marker_name = "PlayerSpawn"
 other_scene_transition_type = 2
-
-[node name="Front" parent="." index="9"]
-tile_map_data = PackedByteArray("AAACAC0AAQAAAAAAAAADAC0AAQAAAAYAAAAEAC0AAQAAAAQAAAAFAC0AAQAAAAAAAAAGAC0AAQAAAAQAAAAHAC0AAQAAAAYAAAAIAC0AAQAAAAQAAAAJAC0AAQAAAAIAAAAKAC0AAQAAAAYAAAALAC0AAQAAAAAAAAANAC0AAQAAAAQAAAAOAC0AAQAAAAYAAAAPAC0AAQAAAAIAAAAUAC0AAQAAAAQAAAAVAC0AAQAAAAYAAAAXAC0AAQAAAAIAAAAZAC0AAQAAAAQAAAAaAC0AAQAAAAYAAAAbAC0AAQAAAAIAAAADACEAAQAAAAgAAAAJACEAAQAAAAwAAAAKACEAAQAAAA4AAAAMACEAAQAAAAQAAAANACEAAQAAAAgAAAAQACEAAQAAAAQAAAARACEAAQAAAAgAAAASACEAAQAAAAwAAAATACEAAQAAAAYAAAAWACEAAQAAAAYAAAAXACEAAQAAAAYAAAAbACEAAQAAAAYAAAAcACEAAQAAAAwAAAACAAcAAQAAAAQAAAAKAAcAAQAAAAYAAAAOAAcAAQAAAA4AAAAQAAcAAQAAAAYAAAARAAcAAQAAAAgAAAAUAAcAAQAAAAQAAAAVAAcAAQAAAAwAAAAXAAcAAQAAAAYAAAAdAAcAAQAAAAQAAAAfAAcAAQAAAAoAAAAiAAcAAQAAAAwAAAAjAAcAAQAAAAYAAAABAC0AAQAAAAQAAAA=")
-tile_set = ExtResource("5_qh36v")
 
 [node name="CanvasLayer" parent="." index="10"]
 visible = false

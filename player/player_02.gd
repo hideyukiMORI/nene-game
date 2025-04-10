@@ -77,7 +77,7 @@ func _physics_process(delta: float) -> void:
 	
 	for idx in range(get_slide_collision_count()):
 		var collision = get_slide_collision(idx)
-		if collision.get_collider().name == 'Danger':
+		if collision.get_collider().name == 'Hazards':
 			hurt()
 		if collision.get_collider().is_in_group('enemies'):
 			var player_feet = (position + $CollisionShape2D.shape.extents).y
