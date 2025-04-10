@@ -51,7 +51,6 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 func take_damage():
-	# $HitSound.play()
 	AudioManager.play_se("PUCHI")
 	$AnimationPlayer.play('death')
 	$CollisionShape2D.set_disabled(true)

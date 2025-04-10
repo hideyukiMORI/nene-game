@@ -6,7 +6,7 @@ extends CharacterBody2D
 @export var dash_trail_ground_end_speed: int = 331
 @export var dash_trail_air_speed: int = 800
 @export var dash_trail_air_end_speed: int = 300
-@export var jump_speed: int = -500
+@export var jump_speed: int = -520
 @export var gravity: int = 1000
 @export var climb_speed: int = 100
 @export var acceleration: int = 800
@@ -17,6 +17,8 @@ extends CharacterBody2D
 @export var fast_fall_delay: float = 0.1 # 垂直落下開始までの遅延
 @export var trail_interval: float = 0.1 # 残像の生成間隔（より広く）
 @export var min_fall_height: float = 100.0 # パーティクルが大きくなる最小落下距離
+@export var normal_collision_mask: int = 94  # 2,3,4,5,7
+@export var down_collision_mask: int = 30   # 2,3,4,5
 
 signal life_changed
 signal dead
@@ -86,7 +88,7 @@ func change_state(new_state: State):
 				velocity.y = -200
 				velocity.x = -100 * sign(velocity.x)
 				life -= 1
-				emit_signal('life_changed', life)
+				emit_signal("life_changed", life)
 				await get_tree().create_timer(0.5).timeout
 				change_state(State.IDLE)
 				if life <= 0:
@@ -98,7 +100,7 @@ func change_state(new_state: State):
 			State.CLIMB_IDLE:
 				play_animation("climb_idle")
 			State.DEAD:
-				emit_signal('dead')
+				emit_signal("dead")
 				hide()
 
 func play_animation(animation_name: String) -> void:
@@ -111,6 +113,9 @@ func _physics_process(delta: float) -> void:
 		if state != State.CROUCH:
 			change_state(State.CROUCH)
 		return
+
+	# まず入力処理を行う
+	get_input(delta)
 
 	var objects = get_parent().get_node("Objects")
 	# 梯子の判定は常時行う
@@ -152,7 +157,6 @@ func _physics_process(delta: float) -> void:
 	
 	move_and_slide()
 
-		
 	# 地面にいる時のY座標を記録
 	if is_on_floor():
 		last_ground_y = position.y
@@ -176,7 +180,6 @@ func _physics_process(delta: float) -> void:
 				velocity.y = fast_fall_speed
 				gravity = fast_fall_gravity
 				$FastFallParticles.emitting = true # パーティクルエフェクト
-				# AudioManager.play_se("FALL_START")  # 垂直落下開始時に音を再生
 				
 				# 残像の生成間隔を制御
 				trail_timer += delta
@@ -270,7 +273,12 @@ func _physics_process(delta: float) -> void:
 		else:
 			change_state(State.IDLE)
 	
-	get_input(delta)
+	# ジャンプカウントのリセット処理を最適化
+	if is_on_floor() and state in [State.IDLE, State.WALK, State.DASH]:
+		if jump_count > 0:  # ジャンプカウントが0より大きい場合のみリセット
+			print("JUMP COUNT RESET - is_on_floor: ", is_on_floor(), " state: ", state, " previous jump_count: ", jump_count)
+			jump_count = 0
+			print("JUMP COUNT RESET COMPLETE - new jump_count: ", jump_count)
 	
 	# ダッシュの残像エフェクト処理
 	var speed = velocity.length() # x と y の合成速度を計算
@@ -318,8 +326,6 @@ func _physics_process(delta: float) -> void:
 		bounce_timer = bounce_grace_time
 		$CoyoteTimer.stop()
 		coyote_time = true
-		jump_count = 0
-		
 	else:
 		bounce_timer = max(0, bounce_timer - delta)
 		if !$CoyoteTimer.is_stopped():
@@ -330,9 +336,6 @@ func _physics_process(delta: float) -> void:
 
 	if state in [State.IDLE, State.WALK, State.DASH] and not is_on_floor():
 		change_state(State.JUMP)
-
-	# if Input.is_action_pressed("select"):
-	# 	get_tree().quit()
 
 func get_input(delta: float):
 	if state == State.HURT:
@@ -346,11 +349,15 @@ func get_input(delta: float):
 	var climb = Input.is_action_pressed("climb")
 	var dash = Input.is_action_pressed("dash")
 
+	if is_on_floor():
+		bounce_timer = bounce_grace_time
+		$CoyoteTimer.stop()
+		coyote_time = true
 	# Objectsレイヤーのコリジョンを制御
 	if down:
-		collision_mask &= ~(1 << 6)  # レイヤー7（Objects）を無効化
+		collision_mask = down_collision_mask
 	else:
-		collision_mask |= (1 << 6)   # レイヤー7（Objects）を有効化
+		collision_mask = normal_collision_mask
 
 	# 梯子の判定
 	if is_on_ladder and state != State.CLIMB and state != State.CLIMB_IDLE:
@@ -430,6 +437,20 @@ func get_input(delta: float):
 	if is_on_floor():
 		for idx in range(get_slide_collision_count()):
 			var collision = get_slide_collision(idx)
+			if collision.get_collider().name == 'Danger':
+				hurt()
+			# print("COLLISION :: ", collision.get_collider().name)
+			if collision.get_collider().is_in_group('enemies'):
+				# print("POSITION :: ", position)
+				var player_feet = (position + $CollisionShape2D.shape.extents).y
+				# print("PLAYER FEET :: ", player_feet)
+				# print("ENEMY POSITION :: ", collision.get_collider().position)
+				if player_feet < collision.get_collider().position.y:
+					collision.get_collider().take_damage()
+					velocity.y = -200
+				else:
+					hurt()
+
 			var normal = collision.get_normal()
 			var angle = rad_to_deg(acos(normal.dot(Vector2.UP)))
 			if angle > 20 and angle < 50:
@@ -450,29 +471,38 @@ func get_input(delta: float):
 		change_state(State.IDLE)
 
 	if jump:
-		if is_on_floor() or coyote_time:
+		# print("JUMP INPUT - is_on_floor: ", is_on_floor(), " coyote_time: ", coyote_time, " jump_count: ", jump_count, " max_jumps: ", max_jumps)
+		if is_on_floor():
+			# print("GROUND JUMP")
+			AudioManager.play_se("JUMP")
+			change_state(State.JUMP)
+			velocity.y = jump_speed
+			jump_count = 1  # 地面からのジャンプは1回目
+			fall_start_y = position.y
+		elif coyote_time and jump_count == 0:  # コヨーテジャンプは1回目のジャンプのみ
+			# print("COYOTE JUMP")
 			AudioManager.play_se("JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed
 			coyote_time = false
 			$CoyoteTimer.stop()
-			jump_count += 1
-			fall_start_y = position.y # ジャンプ開始時に落下開始位置を記録
-				
-		elif !is_on_floor() and !coyote_time and jump_count < max_jumps:
+			jump_count = 1  # コヨーテジャンプも1回目
+			fall_start_y = position.y
+		elif !is_on_floor() and jump_count < max_jumps:
+			# print("AIR JUMP - count: ", jump_count)
 			AudioManager.play_se("HIGH_JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed / 1.5
-			jump_count += 1
-			fall_start_y = position.y # 二段ジャンプ時も落下開始位置を記録
-
+			jump_count += 1  # 空中ジャンプは回数を増やす
+			fall_start_y = position.y
 		elif is_on_wall():
+			# print("WALL JUMP")
 			AudioManager.play_se("JUMP")
 			change_state(State.JUMP)
 			velocity.y = jump_speed
 			velocity.x = - target_velocity_x
 			jump_count += 1
-			fall_start_y = position.y # 壁ジャンプ時も落下開始位置を記録
+			fall_start_y = position.y
 
 	if state in [State.IDLE, State.CROUCH] and velocity.x != 0:
 		change_state(State.WALK)
@@ -509,7 +539,6 @@ func update_particle_direction():
 		$DashTrail.position.x = -14 # 左を向いているとき
 		# $DashTrail.rotation_degrees = -180
 		$DashTrail.skew = -18.5
-
 
 func create_trail_sprite() -> void:
 	var trail_sprite = Sprite2D.new()
@@ -644,9 +673,9 @@ func check_ladder_tile(tilemap: TileMapLayer, pos: Vector2) -> bool:
 	for x in range(start_tile.x, end_tile.x + 1):
 		for y in range(start_tile.y, end_tile.y + 1):
 			var check_pos = Vector2i(x, y)
-			print("CHECK POS: ", check_pos)
+			# print("CHECK POS: ", check_pos)
 			var tile_data = tilemap.get_cell_source_id(check_pos)
-			print("TILE DATA: ", tile_data)
+			# print("TILE DATA: ", tile_data)
 			if tile_data != -1:
 				var tile_info = tilemap.get_cell_tile_data(check_pos)
 				if tile_info and tile_info.get_custom_data("is_climbable"):
@@ -667,6 +696,6 @@ func check_ladder_tile(tilemap: TileMapLayer, pos: Vector2) -> bool:
 					
 					# 矩形が重なっているかチェック
 					if tile_rect.intersects(player_rect):
-						print("CUSTOM DATA: ", tile_info.get_custom_data("is_climbable"))
+						# print("CUSTOM DATA: ", tile_info.get_custom_data("is_climbable"))
 						return true
 	return false
