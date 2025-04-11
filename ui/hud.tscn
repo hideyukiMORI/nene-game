@@ -30,8 +30,7 @@ alignment = 1
 
 [node name="ScoreBox" type="HBoxContainer" parent="TopBar"]
 layout_mode = 2
-size_flags_horizontal = 0
-alignment = 1
+size_flags_horizontal = 3
 
 [node name="Coin" parent="TopBar/ScoreBox" instance=ExtResource("2_o7da3")]
 position = Vector2(20, 44)
@@ -49,10 +48,6 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 16
 theme_override_font_sizes/font_size = 64
 text = "0"
-
-[node name="Spacer" type="Control" parent="TopBar"]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="HealthBar" type="ProgressBar" parent="TopBar"]
 custom_minimum_size = Vector2(200, 48)
