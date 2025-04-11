@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=4 uid="uid://c17lfbhw5kvor"]
+[gd_scene load_steps=16 format=4 uid="uid://c17lfbhw5kvor"]
 
 [ext_resource type="PackedScene" uid="uid://pbts02r4gl31" path="res://levels/level.tscn" id="1_fwaa1"]
 [ext_resource type="TileSet" uid="uid://c2e6xntqwe7fc" path="res://assets/tile_set/beach.tres" id="2_h0co0"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://i2hqa5o3x0dj" path="res://enemies/008_cat.tscn" id="10_skpba"]
 [ext_resource type="PackedScene" uid="uid://by8xrh7os6q4o" path="res://enemies/009_black_cat.tscn" id="11_4kcps"]
 [ext_resource type="PackedScene" uid="uid://c6pdb3hnn7x4n" path="res://enemies/010_cat_sith.tscn" id="12_p4g36"]
+[ext_resource type="TileSet" uid="uid://c5me6hjw5by7b" path="res://assets/tile_set/flowers_animation.tres" id="15_ndvag"]
 [ext_resource type="PackedScene" uid="uid://co4qnqmvx1qkc" path="res://objects/warp_point.tscn" id="16_hcm2r"]
 
 [node name="Level01" instance=ExtResource("1_fwaa1")]
@@ -28,17 +29,21 @@ tile_set = ExtResource("2_h0co0")
 
 [node name="Objects" parent="." index="3"]
 tile_set = ExtResource("2_xh70m")
+metadata/_edit_lock_ = true
 
 [node name="CharacterBody2D" parent="Objects" index="0" instance=ExtResource("3_shtq5")]
-position = Vector2(2584, 358)
+position = Vector2(2584, 359)
+collision_layer = 2
 initial_velocity = Vector2(50, 0)
 
 [node name="CharacterBody2D2" parent="Objects" index="1" instance=ExtResource("3_shtq5")]
 position = Vector2(2728, 167)
+collision_layer = 2
 initial_velocity = Vector2(50, 0)
 
 [node name="CharacterBody2D3" parent="Objects" index="2" instance=ExtResource("3_shtq5")]
 position = Vector2(2392, 55)
+collision_layer = 2
 initial_velocity = Vector2(50, 0)
 
 [node name="Items" parent="." index="4"]
@@ -205,8 +210,15 @@ position = Vector2(844, -185)
 [node name="Cat7" parent="Enemies" index="33" instance=ExtResource("12_p4g36")]
 position = Vector2(452, -476)
 
-[node name="Player" parent="." index="9"]
+[node name="Player" parent="." index="10"]
 collision_mask = 95
+
+[node name="Foregrounds" parent="." index="11"]
+tile_map_data = PackedByteArray("AAALAPb/AQAAAAgAAAAUAPb/AQAAAAgAAAAMAPb/AQAAAAoAAAAPAPb/AQAAAAoAAAAYAPb/AQAAAAoAAAANAPb/AQAAAA4AAAATAPb/AQAAAA4AAAAJAPb/AQAAAAwAAAAXAPb/AQAAAAwAAAAHAPv/AQAAAAwAAAAgAPv/AQAAAAwAAAAYAPv/AQAAAAwAAAAfAPv/AQAAAAoAAAAaAPv/AQAAAAgAAAAQAPv/AQAAAAgAAAARAPv/AQAAAA4AAAAIAPv/AQAAAA4AAAAKAPv/AQAAAAoAAAALAPv/AQAAAAwAAAD7//v/AQAAAAgAAAAAAO3/AQAAAAgAAAAtAPn/AQAAAAgAAAAXAAUAAQAAAAgAAAAJAA0AAQAAAAgAAAAYAAUAAQAAAA4AAAAEAA0AAQAAAAoAAAALABMAAQAAAAAAAAAQABMAAQAAAAAAAAAcABMAAQAAAAAAAAAMABMAAQAAAAIAAAAPABMAAQAAAAIAAAASABMAAQAAAAIAAAAbABMAAQAAAAIAAAAeABMAAQAAAAIAAAAjABMAAQAAAAIAAAAtABUAAQAAAAIAAAAFABwAAQAAAAIAAAAHABcAAQAAAAIAAAAKABMAAQAAAAQAAAARABMAAQAAAAQAAAATABMAAQAAAAQAAAAdABMAAQAAAAQAAAAfABMAAQAAAAQAAAAiABMAAQAAAAQAAAAlABMAAQAAAAQAAAAwABUAAQAAAAQAAAAxABUAAQAAAAQAAAA3AB0AAQAAAAQAAAAyABUAAQAAAAYAAAAsABUAAQAAAAYAAAAjABoAAQAAAAYAAAA1AB0AAQAAAAYAAAAzAB0AAQAAAAYAAAAkACQAAQAAAAYAAAAYACQAAQAAAAYAAAAXACQAAQAAAAIAAAASACQAAQAAAAIAAAAlACQAAQAAAAIAAAAiACQAAQAAAAAAAAAYAB4AAQAAAAgAAAAZAB4AAQAAAAoAAAALABsAAQAAAAoAAAA=")
+tile_set = ExtResource("15_ndvag")
+
+[node name="CanvasLayer" parent="." index="12"]
+visible = false
 
 [node name="SettingPanel" parent="CanvasLayer" index="1"]
 visible = false

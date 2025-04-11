@@ -5,6 +5,7 @@ extends CharacterBody2D
 @export var movement_range: Vector2 = Vector2(100, 100)  # 行動範囲を設定
 @export var vertical_wave_amplitude: float = 20.0  # 垂直方向の波の振幅
 @export var vertical_wave_frequency: float = 1.0  # 垂直方向の波の周波数
+@export var damage: float = 3.0  # 敵の攻撃力
 var facing: int = 1
 var start_position: Vector2
 var time_passed: float = 0.0
@@ -54,8 +55,6 @@ func _physics_process(delta: float) -> void:
 
 	for idx in range(get_slide_collision_count()):
 		var collision = get_slide_collision(idx)
-		if collision.get_collider().name == 'Player':
-			collision.get_collider().hurt()
 		if collision.get_normal().x != 0:
 			facing = sign(collision.get_normal().x)
 			velocity.y = -100

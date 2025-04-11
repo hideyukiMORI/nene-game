@@ -46,6 +46,9 @@ process_mode = 1
 [node name="Items" type="TileMapLayer" parent="."]
 
 [node name="Hazards" type="TileMapLayer" parent="."]
+position = Vector2(0, -2)
+
+[node name="HazardAreas" type="Node2D" parent="."]
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 

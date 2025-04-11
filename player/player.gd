@@ -17,8 +17,8 @@ extends CharacterBody2D
 @export var fast_fall_delay: float = 0.1 # 垂直落下開始までの遅延
 @export var trail_interval: float = 0.1 # 残像の生成間隔（より広く）
 @export var min_fall_height: float = 100.0 # パーティクルが大きくなる最小落下距離
-@export var normal_collision_mask: int = 94  # 2,3,4,5,7
-@export var down_collision_mask: int = 30   # 2,3,4,5
+@export var normal_collision_mask: int = 94  # 2,3,4,5,7,8 (94 + 128)
+@export var down_collision_mask: int = 30   # 2,3,4,5,8 (30 + 128)
 
 signal life_changed
 signal dead
@@ -50,6 +50,11 @@ var shake_amount: float = 0.0
 var shake_duration: float = 0.0
 var shake_timer: float = 0.0
 var original_camera_position: Vector2 = Vector2.ZERO
+
+var _hurt_cooldown: float = 0.0
+const HURT_COOLDOWN_TIME: float = 0.5
+var _invincible_time: float = 0.0
+const INVINCIBLE_TIME: float = 2.0  # 無敵時間を1秒に設定
 
 func _ready() -> void:
 	change_state(State.IDLE)
@@ -85,14 +90,13 @@ func change_state(new_state: State):
 				play_animation("crouch")
 			State.HURT:
 				play_animation("hurt")
-				velocity.y = -200
-				velocity.x = -100 * sign(velocity.x)
-				life -= 1
-				emit_signal("life_changed", life)
-				await get_tree().create_timer(0.5).timeout
-				change_state(State.IDLE)
-				if life <= 0:
-					change_state(State.DEAD)
+				velocity.y = -300
+				# ダメージを受けた方向に応じて跳ね返る
+				if velocity.x == 0:
+					# 真上に跳ね返る場合は、ランダムな方向に少しずらす
+					velocity.x = randf_range(-50, 50)
+				else:
+					velocity.x = -100 * sign(velocity.x)
 			State.JUMP:
 				play_animation("jump_up")
 			State.CLIMB:
@@ -437,9 +441,6 @@ func get_input(delta: float):
 	if is_on_floor():
 		for idx in range(get_slide_collision_count()):
 			var collision = get_slide_collision(idx)
-			if collision.get_collider().name == 'Hazards':
-				hurt()
-			# print("COLLISION :: ", collision.get_collider().name)
 			if collision.get_collider().is_in_group('enemies'):
 				# print("POSITION :: ", position)
 				var player_feet = (position + $CollisionShape2D.shape.extents).y
@@ -449,7 +450,7 @@ func get_input(delta: float):
 					collision.get_collider().take_damage()
 					velocity.y = -200
 				else:
-					hurt()
+					hurt(collision.get_collider().damage)
 
 			var normal = collision.get_normal()
 			var angle = rad_to_deg(acos(normal.dot(Vector2.UP)))
@@ -517,11 +518,15 @@ func get_input(delta: float):
 	if state in [State.DASH, State.WALK] and abs(velocity.x) < 0.1: # 微小な速度も考慮
 		change_state(State.IDLE)
 
-func hurt() -> void:
-	# if state != State.HURT:
-		# $HurtSound.play()
-		# change_state(State.HURT)
-	pass
+func hurt(damage: float) -> void:
+	if state != State.HURT and _hurt_cooldown <= 0.0 and _invincible_time <= 0.0:
+		change_state(State.HURT)
+		AudioManager.play_se("DAMAGE_01")
+		_hurt_cooldown = HURT_COOLDOWN_TIME
+		_invincible_time = INVINCIBLE_TIME
+		PlayerStats.take_damage(damage)
+		# 点滅エフェクトを開始
+		start_blink_effect()
 
 func _on_CoyoteTimer_timeout() -> void:
 	coyote_time = false
@@ -659,6 +664,14 @@ func _process(delta: float) -> void:
 				print("SHAKE CAMERA FINISHED - Frame: ", Engine.get_physics_frames())
 				print("Final camera position: ", camera.global_position)
 
+	if _hurt_cooldown > 0.0:
+		_hurt_cooldown -= delta
+		if _hurt_cooldown <= 0.0 and state == State.HURT:
+			change_state(State.IDLE)
+
+	if _invincible_time > 0.0:
+		_invincible_time -= delta
+
 # 梯子の判定を最適化した実装
 func check_ladder_tile(tilemap: TileMapLayer, pos: Vector2) -> bool:
 	# プレイヤーの中心とサイズを計算
@@ -699,3 +712,10 @@ func check_ladder_tile(tilemap: TileMapLayer, pos: Vector2) -> bool:
 						# print("CUSTOM DATA: ", tile_info.get_custom_data("is_climbable"))
 						return true
 	return false
+
+func start_blink_effect() -> void:
+	var tween = create_tween()
+	tween.tween_property($Sprite2D, "modulate:a", 0.5, 0.1)
+	tween.tween_property($Sprite2D, "modulate:a", 1.0, 0.1)
+	tween.set_loops(5)  # 5回点滅
+

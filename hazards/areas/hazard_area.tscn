@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://dkp8htnunn8g"]
+
+[ext_resource type="Script" path="res://hazards/areas/hazard_area.gd" id="1_7rgws"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_idxpd"]
+size = Vector2(16, 16)
+
+[node name="HazardArea" type="Area2D"]
+collision_layer = 128
+script = ExtResource("1_7rgws")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_idxpd")

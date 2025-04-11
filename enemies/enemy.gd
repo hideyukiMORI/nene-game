@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 @export var speed: int = 10
 @export var gravity: int = 900
+@export var damage: float = 10.0  # 敵の攻撃力
 var facing: int = 1
 
 func _physics_process(delta: float) -> void:
@@ -12,8 +13,6 @@ func _physics_process(delta: float) -> void:
 	
 	for idx in range(get_slide_collision_count()):
 		var collision = get_slide_collision(idx)
-		if collision.get_collider().name == 'Player':
-			collision.get_collider().hurt()
 		if collision.get_normal().x != 0:
 			facing = sign(collision.get_normal().x)
 			velocity.y = -100

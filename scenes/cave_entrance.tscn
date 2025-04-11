@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=4 uid="uid://ct1perpiauar8"]
+[gd_scene load_steps=9 format=4 uid="uid://ct1perpiauar8"]
 
 [ext_resource type="PackedScene" uid="uid://pbts02r4gl31" path="res://levels/level.tscn" id="1_u8fks"]
 [ext_resource type="PackedScene" uid="uid://co4qnqmvx1qkc" path="res://objects/warp_point.tscn" id="2_6kny5"]
 [ext_resource type="TileSet" uid="uid://c2e6xntqwe7fc" path="res://assets/tile_set/beach.tres" id="2_11n3o"]
 [ext_resource type="TileSet" uid="uid://b3xb1rsvpuh16" path="res://assets/tile_set/objects.tres" id="3_0y7w7"]
 [ext_resource type="TileSet" uid="uid://bdb5164exifvc" path="res://assets/tile_set/items.tres" id="3_eta1p"]
+[ext_resource type="TileSet" uid="uid://dlarj3buhnpwi" path="res://assets/tile_set/hazards.tres" id="5_2scmh"]
+[ext_resource type="TileSet" uid="uid://c5me6hjw5by7b" path="res://assets/tile_set/flowers_animation.tres" id="5_qh36v"]
+[ext_resource type="PackedScene" uid="uid://dkp8htnunn8g" path="res://hazards/areas/hazard_area.tscn" id="6_pl8cl"]
 
 [node name="CaveEntrance" instance=ExtResource("1_u8fks")]
 bgm = 1
@@ -23,6 +26,15 @@ metadata/is_climbable = false
 tile_map_data = PackedByteArray("AABRABsAAQAAAAAAAABTABsAAQAAAAAAAABVABsAAQAAAAAAAABXABsAAQAAAAAAAABZABsAAQAAAAAAAABbABsAAQAAAAAAAABdABsAAQAAAAAAAAAFABsAAQAAAAAAAAALABgAAQAAAAAAAAAUABMAAQAAAAAAAAAaABsAAQAAAAAAAAARAB4AAQAAAAAAAAAKAA8AAQAAAAAAAAACABIAAQAAAAAAAAASABUAAQAAAAAAAAAXAB8AAQAAAAAAAAApAB8AAQAAAAAAAAAoACcAAQAAAAAAAAA=")
 tile_set = ExtResource("3_eta1p")
 
+[node name="Hazards" parent="." index="4"]
+z_index = 2
+tile_map_data = PackedByteArray("AADVAC0AAQABAAMAAADVAC4AAQABAAQAAADXAC0AAQABAAMAAADXAC4AAQABAAQAAADZAC0AAQABAAMAAADZAC4AAQABAAQAAADbAC0AAQABAAMAAADbAC4AAQABAAQAAADdAC0AAQABAAMAAADdAC4AAQABAAQAAAA=")
+tile_set = ExtResource("5_2scmh")
+
+[node name="HazardArea" parent="HazardAreas" index="0" instance=ExtResource("6_pl8cl")]
+position = Vector2(3488, 734)
+scale = Vector2(10, 1)
+
 [node name="PlayerSpawn" parent="SpawnPoints" index="0"]
 position = Vector2(110, 88)
 
@@ -33,7 +45,11 @@ target_scene_name = "level_01"
 spawn_marker_name = "PlayerSpawn"
 other_scene_transition_type = 2
 
-[node name="CanvasLayer" parent="." index="10"]
+[node name="Foregrounds" parent="." index="10"]
+tile_map_data = PackedByteArray("AAAEAAcAAQAAAAgAAAATAAcAAQAAAAgAAAAYAAcAAQAAAAgAAAASAAcAAQAAAAoAAAAWAAcAAQAAAAoAAAAeAAcAAQAAAAoAAAAUAAcAAQAAAAwAAAAVAAcAAQAAAAwAAAAaAAcAAQAAAAwAAAAfAAcAAQAAAAwAAAAkAAcAAQAAAAwAAAAPAAcAAQAAAAwAAAAiAAcAAQAAAA4AAAAQAAcAAQAAAA4AAAADAAcAAQAAAA4AAAAdACEAAQAAAA4AAAAHACEAAQAAAA4AAAAcACEAAQAAAAwAAAAMACEAAQAAAAwAAAAEACEAAQAAAAwAAAABACEAAQAAAAwAAAAZACEAAQAAAAoAAAAUACEAAQAAAAoAAAANACEAAQAAAAoAAAAGACEAAQAAAAoAAAASACEAAQAAAAgAAAAFACEAAQAAAAgAAAAbACEAAQAAAAAAAAAXACEAAQAAAAQAAAAWACEAAQAAAAYAAAAKACEAAQAAAAYAAAADACEAAQAAAAYAAAALACEAAQAAAAQAAAABAC0AAQAAAAQAAAACAC0AAQAAAAYAAAAHAC0AAQAAAAYAAAAJAC0AAQAAAAYAAAANAC0AAQAAAAYAAAAXAC0AAQAAAAYAAAAcAC0AAQAAAAYAAAAaAC0AAQAAAAYAAAAIAC0AAQAAAAQAAAAFAC0AAQAAAAQAAAAOAC0AAQAAAAQAAAAVAC0AAQAAAAQAAAAbAC0AAQAAAAQAAAAEAC0AAQAAAAIAAAAGAC0AAQAAAAIAAAAMAC0AAQAAAAIAAAATAC0AAQAAAAIAAAADAC0AAQAAAAAAAAAKAC0AAQAAAAAAAAAQAC0AAQAAAAAAAAA=")
+tile_set = ExtResource("5_qh36v")
+
+[node name="CanvasLayer" parent="." index="11"]
 visible = false
 
 [node name="SettingPanel" parent="CanvasLayer" index="1"]

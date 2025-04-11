@@ -102,6 +102,7 @@ dash={
 2d_render/layer_5="NPC"
 2d_render/layer_6="UI"
 2d_render/layer_7="Object"
+2d_render/layer_8="Hazards"
 2d_physics/layer_1="Player"
 2d_navigation/layer_1="Player"
 2d_physics/layer_2="World"
@@ -116,6 +117,8 @@ dash={
 2d_navigation/layer_6="UI"
 2d_physics/layer_7="Object"
 2d_navigation/layer_7="Object"
+2d_physics/layer_8="Hazards"
+2d_navigation/layer_8="Hazards"
 
 [rendering]
 

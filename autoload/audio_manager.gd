@@ -30,7 +30,9 @@ var se_paths = {
 	"WARP": "res://assets/audio/se/warp_02.wav",
 	"LANDING": "res://assets/audio/se/landing_01.mp3",
 	"LANDING_02": "res://assets/audio/se/landing_02.mp3",
-	"FALL_START": "res://assets/audio/se/fall_02.mp3"
+	"FALL_START": "res://assets/audio/se/fall_02.mp3",
+	"DAMAGE_01": "res://assets/audio/se/damage_01.mp3",
+	"DAMAGE_02": "res://assets/audio/se/damage_02.mp3"
 }
 
 func _ready() -> void:

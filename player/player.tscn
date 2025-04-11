@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://b67i3tfkkuedg"]
+[gd_scene load_steps=23 format=3 uid="uid://b67i3tfkkuedg"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_jkgy0"]
 [ext_resource type="Texture2D" uid="uid://dc46mmfni2yop" path="res://assets/sprites/nene_04.png" id="2_w80b2"]
@@ -93,6 +93,36 @@ tracks/0/keys = {
 "values": [13, 14, 15, 16, 17, 18]
 }
 
+[sub_resource type="Animation" id="Animation_dgqk6"]
+resource_name = "death"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+
+[sub_resource type="Animation" id="Animation_018jl"]
+resource_name = "hurt"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+
 [sub_resource type="Animation" id="Animation_lha5w"]
 resource_name = "idle"
 length = 0.4
@@ -170,6 +200,8 @@ _data = {
 "climb_idle": SubResource("Animation_hbdod"),
 "crouch": SubResource("Animation_4ehus"),
 "dash": SubResource("Animation_nk2pd"),
+"death": SubResource("Animation_dgqk6"),
+"hurt": SubResource("Animation_018jl"),
 "idle": SubResource("Animation_lha5w"),
 "jump_down": SubResource("Animation_5bu71"),
 "jump_up": SubResource("Animation_x7iy0"),
@@ -228,7 +260,7 @@ anim_speed_min = 25.0
 anim_speed_max = 125.0
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
-collision_mask = 94
+collision_mask = 222
 script = ExtResource("1_jkgy0")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
