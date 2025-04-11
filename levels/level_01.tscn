@@ -12,7 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://xy5pluw3kk6e" path="res://enemies/006-ghost.tscn" id="9_p0hpw"]
 [ext_resource type="PackedScene" uid="uid://i2hqa5o3x0dj" path="res://enemies/008_cat.tscn" id="10_skpba"]
 [ext_resource type="PackedScene" uid="uid://by8xrh7os6q4o" path="res://enemies/009_black_cat.tscn" id="11_4kcps"]
-[ext_resource type="PackedScene" uid="uid://c6pdb3hnn7x4n" path="res://enemies/010_cat_sith.tscn" id="12_p4g36"]
+[ext_resource type="PackedScene" uid="uid://c6pdb3hnn7x4n" path="res://npc/010_cat_sith.tscn" id="12_p4g36"]
 [ext_resource type="TileSet" uid="uid://c5me6hjw5by7b" path="res://assets/tile_set/flowers_animation.tres" id="15_ndvag"]
 [ext_resource type="PackedScene" uid="uid://co4qnqmvx1qkc" path="res://objects/warp_point.tscn" id="16_hcm2r"]
 
