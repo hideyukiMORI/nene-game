@@ -13,6 +13,8 @@ func _physics_process(delta: float) -> void:
 	
 	for idx in range(get_slide_collision_count()):
 		var collision = get_slide_collision(idx)
+		if collision.get_collider().name == 'Player':
+			collision.get_collider().hurt(damage)
 		if collision.get_normal().x != 0:
 			facing = sign(collision.get_normal().x)
 			velocity.y = -100

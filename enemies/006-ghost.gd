@@ -55,6 +55,8 @@ func _physics_process(delta: float) -> void:
 
 	for idx in range(get_slide_collision_count()):
 		var collision = get_slide_collision(idx)
+		# if collision.get_collider().name == 'Player':
+		# 	collision.get_collider().hurt(damage)
 		if collision.get_normal().x != 0:
 			facing = sign(collision.get_normal().x)
 			velocity.y = -100
@@ -64,10 +66,11 @@ func _physics_process(delta: float) -> void:
 
 func take_damage():
 	# $HitSound.play()
-	AudioManager.play_se("PUCHI")
-	$AnimationPlayer.play('death')
-	$CollisionShape2D.set_disabled(true)
-	set_physics_process(false)
+	# AudioManager.play_se("PUCHI")
+	# $AnimationPlayer.play('death')
+	# $CollisionShape2D.set_disabled(true)
+	# set_physics_process(false)
+	print("GHOST :: take_damage")
 
 func _on_animation_player_animation_finished(anim_name:StringName) -> void:
 	if anim_name == 'death':
