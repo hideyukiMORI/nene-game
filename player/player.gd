@@ -63,6 +63,8 @@ func _ready() -> void:
 	$CoyoteTimer.wait_time = 0.2
 	$CoyoteTimer.connect("timeout", Callable(self, "_on_CoyoteTimer_timeout"))
 	last_ground_y = position.y # 初期位置を記録
+	# 体力が0になった時のシグナルを接続
+	PlayerStats.health_depleted.connect(_on_health_depleted)
 
 func reset(pos) -> void:
 	print("START", pos)
@@ -719,3 +721,6 @@ func start_blink_effect() -> void:
 	tween.tween_property($Sprite2D, "modulate:a", 1.0, 0.1)
 	tween.set_loops(5)  # 5回点滅
 
+# 体力が0になった時の処理
+func _on_health_depleted() -> void:
+	change_state(State.DEAD)

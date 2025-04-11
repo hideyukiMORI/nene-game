@@ -115,3 +115,14 @@ func _save_settings() -> void:
 	config.set_value("language", "current", current_language)
 	config.save("user://settings.cfg")
 
+# ゲームの状態を完全にリセットする
+func reset_game_state() -> void:
+	score = 0
+	score_changed.emit(score)
+	PlayerStats.reset_health()
+	# 将来的に追加する可能性のある他のリセット処理
+	# - アイテムの状態
+	# - 敵の配置
+	# - ステージの状態
+	# - プレイヤーの位置
+	# - その他のゲーム変数

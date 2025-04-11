@@ -63,6 +63,11 @@ func get_health() -> float:
 func get_health_ratio() -> float:
     return current_health / get_max_health()
 
+# 体力を最大値にリセットする
+func reset_health() -> void:
+    current_health = get_max_health()
+    health_changed.emit(current_health, get_max_health())
+
 func save_stats() -> void:
     var _save_data = {
         SAVE_KEY_BASE_MAX_HEALTH: base_max_health,

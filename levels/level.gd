@@ -91,7 +91,7 @@ func _on_Collectible_pickup():
 
 func _on_player_dead():
 	AudioManager.reset_bgm()
-
+	GameState.reset_game_state()
 	GameState.restart()
 
 func _on_ladders_body_entered(body):
