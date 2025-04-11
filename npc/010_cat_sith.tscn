@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://c6pdb3hnn7x4n"]
 
-[ext_resource type="Script" path="res://enemies/010_cat_sith.gd" id="1_yftg6"]
+[ext_resource type="Script" path="res://npc/010_cat_sith.gd" id="1_yftg6"]
 [ext_resource type="Texture2D" uid="uid://bthwl5o4dd1k1" path="res://assets/sprites/010-cat-sith.png" id="2_j4ait"]
 [ext_resource type="AudioStream" uid="uid://d3chk5mdup5bw" path="res://assets/audio/se/puchi.mp3" id="3_asmv3"]
 [ext_resource type="PackedScene" uid="uid://v8p13o0agusf" path="res://dialogue/scenes/ui/talk_prompt.tscn" id="4_2xrgv"]
@@ -87,7 +87,7 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6kbps"]
 size = Vector2(80, 96.5)
 
-[node name="Cat" type="CharacterBody2D" groups=["enemies", "interactable"]]
+[node name="Cat" type="CharacterBody2D" groups=["interactable"]]
 collision_layer = 16
 collision_mask = 11
 script = ExtResource("1_yftg6")
